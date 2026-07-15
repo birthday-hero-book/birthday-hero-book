@@ -1,0 +1,67 @@
+.legal-notice { background: #e6ebde; border-color: #b8c4ad; }
+.legal-notice p { color: #5f6a59; font-size: 10px; }
+
+@media (max-width: 1050px) {
+  .nav-shell nav { display: none; }
+  .v1-hero { grid-template-columns: 1fr 480px; }
+  .v1-hero h1 { font-size: clamp(51px, 6.5vw, 74px); }
+  .v1-intro { grid-template-columns: 1fr 3fr; }
+  .book-experience { grid-template-columns: 1fr; }.book-experience-copy { max-width: 700px; }.spread-stack { margin: 0 auto; max-width: 800px; width: 100%; }
+  .v2-hero { grid-template-columns: .9fr 1.1fr; }.admit-ticket { display: none; }
+  .show-book.cover { left: 0; }.show-tablet { right: -4%; }
+  .form-layout { grid-template-columns: 1fr 300px; }
+}
+
+@media (max-width: 800px) {
+  .announcement { font-size: 9px; justify-content: space-between; }.announcement p i, .announcement p span { display: none; }.announcement a { flex: 0 0 auto; margin-left: 12px; }
+  .nav-shell { height: 66px; padding: 0 18px; }.nav-cta { font-size: 0; height: 39px; padding: 0; width: 39px; }.nav-cta span { font-size: 15px; margin: auto; }
+  .v1-nav .nav-cta { font-size: 10px; padding: 0 14px; width: auto; }
+  .brand { font-size: 13px; }.brand-mark { height: 29px; width: 25px; }
+  .v1-hero, .v2-hero { display: flex; flex-direction: column; min-height: auto; padding: 60px 20px 70px; }
+  .v1-hero-copy { width: 100%; }.v1-hero h1 { font-size: clamp(50px, 14vw, 73px); }.v1-hero-copy > p { font-size: 15px; }.v1-hero-stage { margin: 35px auto 0; min-height: 470px; width: 100%; }.hero-book { left: 20%; width: 61%; }.page-right { right: 0; }.page-left { left: 0; }.hero-reassurance { justify-content: space-between; }.hero-reassurance span { font-size: 8px; }.hero-reassurance b { font-size: 12px; }
+  .value-strip { grid-template-columns: 1fr 1fr; padding: 0 12px; }.value-strip > div { min-height: 84px; padding: 12px; }.value-strip > div:nth-child(3) { border-left: 1px solid var(--line); }.value-strip strong { font-size: 11px; }
+  .v1-intro { display: block; padding: 90px 21px; }.statement { font-size: 39px; margin: 29px 0; width: 100%; }.intro-overline { margin: 0; }
+  .v1-demo-section { border-radius: 18px; margin: 0 9px; padding: 48px 16px; }.demo { display: flex; flex-direction: column; }.demo-controls { width: 100%; }.demo-book { margin-top: 25px; width: 100%; }.demo-book-copy strong { font-size: clamp(22px, 6vw, 37px); }
+  .v1-how, .v1-adventures, .pricing, .faqs, .v2-demo-section, .v2-how, .v2-adventures, .v2-benefits { padding: 90px 20px; }.section-heading h2, .v2-section-title h2 { font-size: 42px; }.steps-editorial { margin-top: 45px; }.steps-editorial article { gap: 20px; grid-template-columns: 92px 1fr; min-height: 170px; }.step-art { height: 100px; }.step-art::after { height: 62px; width: 62px; }.step-art span { font-size: 20px; }.steps-editorial article > div:last-child { display: block; }.step-number { display: block; margin-bottom: 8px; }.steps-editorial h3 { font-size: 23px; }.steps-editorial p { font-size: 11px; margin-top: 10px; }
+  .adventure-heading { align-items: start; display: block; }.adventure-grid, .playbill-grid, .price-grid { grid-template-columns: 1fr; }.adventure-card { max-width: 560px; }.adventure-copy p { min-height: 0; }.playbill { margin: 0 auto; max-width: 540px; width: 100%; }.playbill-copy p { min-height: 0; }.price-grid { gap: 20px; }.price-card { min-height: auto; }.price-card.featured { transform: none; }.price-head p { min-height: 0; }.price-card ul { min-height: 0; }
+  .book-experience { padding: 90px 20px 50px; }.spread-stack { min-height: 600px; transform: scale(.88); transform-origin: top center; }.sample-cover { left: 0; }.sample-spread { right: -10%; }.sample-device { left: -5%; }
+  .v1-benefits { display: block; padding: 90px 20px; }.benefit-lead { position: static; }.benefit-list { margin-top: 50px; }.benefit-lead h2 { font-size: 44px; }
+  .founding { display: flex; flex-direction: column; margin: 70px 12px 90px; padding: 55px 25px; }.founding-art { max-width: 430px; width: 100%; }.founding-copy h2 { font-size: 42px; }
+  .faqs { display: block; }.faq-list { margin-top: 45px; }.faq-list summary { font-size: 14px; }
+  .final-cta { min-height: 560px; padding: 80px 20px; }.final-cta h2 { font-size: clamp(46px, 12vw, 72px); }
+  .footer-top { grid-template-columns: 1fr 1fr; }.footer-top > div { grid-column: 1/-1; }.site-footer { padding: 65px 22px 25px; }
+  .v2-hero { padding-top: 65px; }.v2-hero-copy { text-align: center; }.v2-hero h1 { font-size: clamp(49px, 14vw, 74px); }.v2-hero .button-row { justify-content: center; }.theatre-frame { margin: 35px auto 0; max-height: none; }.v2-value { grid-template-columns: 1fr 1fr; padding: 0 12px; }.v2-value > p { display: none; }.v2-value > div { min-height: 84px; padding: 10px; }.v2-value > div:nth-child(odd) { border-left: 0; }.v2-value strong { font-size: 10px; }.v2-value small { font-size: 8px; }.v2-prologue { display: block; margin: 0 20px; padding: 90px 0; }.dropcap { font-size: 39px; margin-top: 25px; }
+  .demo--two { padding: 40px 25px; }.demo--two .demo-book { width: min(100%, 470px); }
+  .v2-steps { gap: 60px; grid-template-columns: 1fr; margin-top: 50px; }.v2-steps p { max-width: 420px; }.step-thread { display: none; }
+  .v2-book-showcase { padding: 90px 20px 20px; }.showcase-stage { height: 800px; left: 50%; margin-left: -425px; transform: scale(.84); transform-origin: top center; width: 850px; }.show-book.cover { left: 8%; }.show-tablet { right: 9%; top: 45%; }
+  .warmth-grid { grid-template-columns: 1fr 1fr; }.warmth-grid article { min-height: 200px; padding: 24px; }
+  .comparison-grid { grid-template-columns: 1fr; }.comparison-intro { padding-top: 65px; }.concept-meta { min-height: 160px; }
+  .form-layout { display: flex; flex-direction: column; padding-top: 80px; }.order-summary { order: -1; position: static; width: 100%; }.summary-art { display: none; }.form-main { width: 100%; }
+  .legal-page article > section { display: block; }.legal-page article h2 { margin-bottom: 18px; }
+}
+
+@media (max-width: 500px) {
+  .button-row { align-items: stretch; flex-direction: column; }.button { width: 100%; }.v1-hero-stage { min-height: 395px; }.orbit-note, .stage-caption { display: none; }.page-left { width: 31%; }.page-right { width: 32%; }.hero-book { height: 72%; left: 18%; width: 65%; }
+  .hero-reassurance { gap: 8px; }.hero-reassurance span { letter-spacing: .04em; }
+  .value-strip strong { font-size: 12px; }.value-strip small { font-size: 12px; }.statement { font-size: 34px; }
+  .demo-grid { grid-template-columns: 1fr; }.demo-grid label, .demo-grid fieldset, .full-field { grid-column: 1; }.theme-pills label { flex: 1; justify-content: center; min-width: 30%; padding: 9px 4px; }
+  .steps-editorial article { grid-template-columns: 76px 1fr; }.step-art { height: 82px; }.step-art::after { height: 50px; width: 50px; }.steps-editorial h3 { font-size: 20px; }
+  .book-experience { min-height: 920px; }.spread-stack { height: 760px; left: 50%; margin-left: -380px; min-height: 0; transform: scale(.64); width: 760px; }.sample-cover { left: 14%; }.spread-a { right: 12%; }.spread-b { bottom: 10%; right: 18%; }.sample-device { bottom: 4%; left: 20%; }
+  .benefit-list article { grid-template-columns: 28px 1fr; }.benefit-list article > i { display: none; }
+  .price-card { padding: 25px 22px; }.price { font-size: 53px; }.founding { border-radius: 10px; }.faqs { gap: 0; }.faq-list details p { margin-right: 10px; }
+  .footer-top { gap: 45px; }.footer-bottom { align-items: start; flex-direction: column; gap: 8px; }
+  .v2-hero { padding-left: 16px; padding-right: 16px; }.theatre-frame { width: 110%; }.marquee-name { bottom: 4%; }.v2-value div > span { font-size: 16px; grid-row: 1; }.v2-value > div { display: block; }.v2-value strong, .v2-value small { display: block; }.v2-value small { margin-top: 4px; }
+  .demo--two { padding: 35px 20px; }.v2-prologue .dropcap { font-size: 33px; }.warmth-grid { grid-template-columns: 1fr; }.warmth-grid article { min-height: 170px; }.warmth-grid h3 { margin-top: 17px; }
+  .v2-book-showcase { min-height: 950px; }.showcase-stage { transform: scale(.64); }
+  .comparison-page { padding-bottom: 25px; }.comparison-nav > span { display: none; }.comparison-intro h1 { font-size: 48px; }.comparison-grid { padding: 0 10px 50px; }.concept-preview { aspect-ratio: 1.04; }.preview-cover { left: 24%; right: 24%; }.concept-meta { align-items: start; flex-direction: column; min-height: 0; padding: 23px; }
+  .form-nav > div { display: none; }.form-progress > b { width: 80px; }.form-layout { padding: 75px 18px 90px; }.form-heading h1 { font-size: 49px; }.form-grid { grid-template-columns: 1fr; }.order-form .full-field { grid-column: 1; }.form-submit { min-width: 0; }.order-summary { padding: 19px; }
+  .next-steps { grid-template-columns: 1fr; }.next-steps > div { border-bottom: 1px solid rgba(255,255,255,.17); border-right: 0; }.thanks-page { padding-left: 20px; padding-right: 20px; }.thanks-card { margin-top: 60px; }.thanks-card h1 { font-size: 50px; }
+  .legal-page > header { padding: 0 18px; }.legal-page > header > a { font-size: 0; }.legal-page > header > a::after { content: "← Back"; font-size: 9px; }.legal-page article { padding: 70px 20px 90px; }.legal-heading h1 { font-size: 51px; }.legal-contact { align-items: start; flex-direction: column; gap: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+:focus-visible { outline: 3px solid #2781a2; outline-offset: 3px; }
