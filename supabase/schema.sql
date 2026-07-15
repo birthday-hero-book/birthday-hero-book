@@ -32,6 +32,11 @@ create unique index if not exists birthday_hero_orders_stripe_session_unique
 
 alter table public.birthday_hero_orders enable row level security;
 
+-- The Data API is opt-in for this project. Only the server-only service role
+-- may reach the order table; browser roles receive no table privileges.
+revoke all on table public.birthday_hero_orders from anon, authenticated;
+grant select, insert, update, delete on table public.birthday_hero_orders to service_role;
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('order-photos', 'order-photos', false, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
 on conflict (id) do update set

@@ -25,11 +25,11 @@ function storageObjectUrl(baseUrl: string, bucket: string, objectPath: string) {
 
 export async function POST(request: Request) {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   const photoBucket = process.env.SUPABASE_ORDER_BUCKET || "order-photos";
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 
-  if (!supabaseUrl || !serviceRoleKey || !stripeSecretKey) {
+  if (!supabaseUrl || !supabaseSecretKey || !stripeSecretKey) {
     return NextResponse.json({ error: "Secure order storage and payment verification are not configured yet." }, { status: 503 });
   }
 
@@ -84,8 +84,7 @@ export async function POST(request: Request) {
       const uploadResponse = await fetch(storageObjectUrl(supabaseUrl, photoBucket, photoPath), {
         method: "POST",
         headers: {
-          apikey: serviceRoleKey,
-          Authorization: `Bearer ${serviceRoleKey}`,
+          apikey: supabaseSecretKey,
           "Content-Type": photo.type,
           "x-upsert": "false",
         },
@@ -123,8 +122,7 @@ export async function POST(request: Request) {
     const insertResponse = await fetch(`${supabaseUrl}/rest/v1/birthday_hero_orders`, {
       method: "POST",
       headers: {
-        apikey: serviceRoleKey,
-        Authorization: `Bearer ${serviceRoleKey}`,
+        apikey: supabaseSecretKey,
         "Content-Type": "application/json",
         Prefer: "return=minimal",
       },
@@ -135,7 +133,7 @@ export async function POST(request: Request) {
       if (photoPath) {
         await fetch(storageObjectUrl(supabaseUrl, photoBucket, photoPath), {
           method: "DELETE",
-          headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
+          headers: { apikey: supabaseSecretKey },
         });
       }
       throw new Error("We could not save the order details. Please contact us if you have already paid.");

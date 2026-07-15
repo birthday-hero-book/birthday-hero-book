@@ -98,7 +98,7 @@ Without `demo=1`, the form requires Stripe’s automatically supplied Checkout S
 1. Create a Supabase project in the UK or closest appropriate region.
 2. Run [`supabase/schema.sql`](./supabase/schema.sql) in the Supabase SQL Editor. This creates the private order table and private `order-photos` bucket with row-level security enabled and no public policies.
 3. Copy `.env.example` to `.env.local` for local testing, or add the same names in Vercel **Settings → Environment Variables**.
-4. Set the Supabase, Stripe and notification values listed in `.env.example`. Never expose a service-role or Stripe secret key, or prefix either with `NEXT_PUBLIC_`.
+4. Set the Supabase, Stripe and notification values listed in `.env.example`. Use Supabase's current `sb_secret_…` server key, and never expose it or a Stripe secret key in source code or with a `NEXT_PUBLIC_` prefix.
 5. Configure a Supabase Database Webhook or Make workflow for new `birthday_hero_orders` rows to notify `hello@birthdayherobook.com`. Do not include child details or photographs in the notification email; link staff to the protected Supabase dashboard instead.
 6. Add a documented retention/deletion schedule and restricted staff-access process before accepting live orders.
 
