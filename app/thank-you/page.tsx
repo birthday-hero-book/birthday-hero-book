@@ -7,7 +7,9 @@ import { Brand } from "@/components/Brand";
 import { siteConfig } from "@/lib/site-config";
 
 function ThankYouPageContent() {
-  const name = useSearchParams().get("hero") || "your hero";
+  const params = useSearchParams();
+  const name = params.get("hero") || "your hero";
+  const isDemo = params.get("demo") === "1";
   return (
     <main className="thanks-page">
       <header><Brand inverse /></header>
@@ -16,14 +18,18 @@ function ThankYouPageContent() {
         <div className="thanks-mark">✓</div>
         <span className="section-kicker">The adventure is in motion</span>
         <h1>We’ve got {name}’s<br /><em>story details.</em></h1>
-        <p>Thank you. In the live journey, we’d now carefully create their illustrated adventure and email it within five working days.</p>
+        <p>{isDemo
+          ? "Thank you. In the live journey, we’d now carefully create their illustrated adventure and email it within five working days."
+          : "Thank you. Your payment and story details have been received securely. We’ll carefully create their illustrated adventure and email it within five working days."}</p>
         <div className="next-steps">
-          <div><span>01</span><p><strong>Look for a confirmation</strong>We’ll send a summary to the purchaser email.</p></div>
+          <div><span>01</span><p><strong>{isDemo ? "Preview complete" : "Order received"}</strong>{isDemo ? "No information has been sent to our order system." : "Your payment and personalisation details have been securely recorded."}</p></div>
           <div><span>02</span><p><strong>We create the magic</strong>Their details are woven through the story and artwork.</p></div>
           <div><span>03</span><p><strong>Open the big reveal</strong>The print-ready book arrives by email within five working days.</p></div>
         </div>
         <div className="thanks-actions"><Link className="button button-light" href="/">Return to Birthday Hero Book</Link><a href={`mailto:${siteConfig.contactEmail}`}>Questions? Email us</a></div>
-        <small>This is a demonstration confirmation. No information has been sent to a server.</small>
+        <small>{isDemo
+          ? "This is a demonstration confirmation. No information has been sent to our order system."
+          : `Need to add something to your order? Email ${siteConfig.contactEmail}.`}</small>
       </section>
     </main>
   );
