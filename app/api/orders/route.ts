@@ -27,9 +27,9 @@ export async function POST(request: Request) {
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
   const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   const photoBucket = process.env.SUPABASE_ORDER_BUCKET || "order-photos";
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  const stripeApiKey = process.env.STRIPE_RESTRICTED_KEY || process.env.STRIPE_SECRET_KEY;
 
-  if (!supabaseUrl || !supabaseSecretKey || !stripeSecretKey) {
+  if (!supabaseUrl || !supabaseSecretKey || !stripeApiKey) {
     return NextResponse.json({ error: "Secure order storage and payment verification are not configured yet." }, { status: 503 });
   }
 
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     if (!expectedPaymentLink) throw new Error("Payment verification is not configured for this edition.");
 
     const stripeResponse = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(stripeSessionId)}`, {
-      headers: { Authorization: `Bearer ${stripeSecretKey}` },
+      headers: { Authorization: `Bearer ${stripeApiKey}` },
       cache: "no-store",
     });
     if (!stripeResponse.ok) throw new Error("We could not verify this Stripe payment. Please contact us if you have already paid.");

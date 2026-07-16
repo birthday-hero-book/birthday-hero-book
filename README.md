@@ -78,7 +78,7 @@ The current checkout URLs intentionally point to the local `/personalise` demo s
    - Deluxe: `https://birthdayherobook.com/personalise?package=deluxe&session_id={CHECKOUT_SESSION_ID}`
    - Family: `https://birthdayherobook.com/personalise?package=family&session_id={CHECKOUT_SESSION_ID}`
 3. Replace `standardCheckoutUrl`, `deluxeCheckoutUrl`, and `familyCheckoutUrl` in `lib/site-config.ts` with the corresponding Stripe URLs.
-4. Add the server-only Stripe values from `.env.example` to Vercel. Never prefix them with `NEXT_PUBLIC_` or commit real secrets.
+4. Add the server-only Stripe values from `.env.example` to Vercel. Prefer a restricted Stripe key with read-only Checkout Sessions access; never prefix it with `NEXT_PUBLIC_` or commit it.
 5. The personalisation form captures the Checkout Session ID invisibly, verifies that Stripe reports it as paid and complete, and confirms that its Payment Link matches the selected edition. Customers never need to copy an order number.
 6. Before launch, connect a signed `checkout.session.completed` webhook using `STRIPE_WEBHOOK_SECRET`; the redirect improves the immediate journey, while the webhook provides dependable payment-event handling if a customer closes the browser.
 
@@ -98,7 +98,7 @@ Without `demo=1`, the form requires Stripe’s automatically supplied Checkout S
 1. Create a Supabase project in the UK or closest appropriate region.
 2. Run [`supabase/schema.sql`](./supabase/schema.sql) in the Supabase SQL Editor. This creates the private order table and private `order-photos` bucket with row-level security enabled and no public policies.
 3. Copy `.env.example` to `.env.local` for local testing, or add the same names in Vercel **Settings → Environment Variables**.
-4. Set the Supabase, Stripe and notification values listed in `.env.example`. Use Supabase's current `sb_secret_…` server key, and never expose it or a Stripe secret key in source code or with a `NEXT_PUBLIC_` prefix.
+4. Set the Supabase, Stripe and notification values listed in `.env.example`. Use Supabase's current `sb_secret_…` server key and a read-only Stripe restricted key; never expose either in source code or with a `NEXT_PUBLIC_` prefix.
 5. Configure a Supabase Database Webhook or Make workflow for new `birthday_hero_orders` rows to notify `hello@birthdayherobook.com`. Do not include child details or photographs in the notification email; link staff to the protected Supabase dashboard instead.
 6. Add a documented retention/deletion schedule and restricted staff-access process before accepting live orders.
 
