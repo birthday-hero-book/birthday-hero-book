@@ -38,7 +38,8 @@ function PersonalisePageContent() {
     if (isDemo) {
       const safeDemoData = Object.fromEntries([...formData.entries()].filter(([key, value]) => key !== "photo" && typeof value === "string"));
       window.localStorage.setItem("birthdayHeroDemoSubmission", JSON.stringify({ ...safeDemoData, package: selectedPackage.name, submittedAt: new Date().toISOString() }));
-      window.setTimeout(() => router.push(`/thank-you?hero=${encodeURIComponent(String(formData.get("childFirstName") || "your hero"))}&demo=1`), 650);
+      window.sessionStorage.setItem("bhb_hero", String(formData.get("childFirstName") || ""));
+      window.setTimeout(() => router.push("/thank-you?demo=1"), 650);
       return;
     }
 
@@ -46,7 +47,8 @@ function PersonalisePageContent() {
       const response = await fetch("/api/orders", { method: "POST", body: formData });
       const result = await response.json() as { error?: string };
       if (!response.ok) throw new Error(result.error || "We could not save these details. Please try again.");
-      router.push(`/thank-you?hero=${encodeURIComponent(String(formData.get("childFirstName") || "your hero"))}`);
+      window.sessionStorage.setItem("bhb_hero", String(formData.get("childFirstName") || ""));
+      router.push("/thank-you");
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "We could not save these details. Please try again.");
       setSubmitting(false);
