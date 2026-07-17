@@ -13,9 +13,9 @@
 }
 
 @media (max-width: 800px) {
-  .announcement { font-size: 9px; justify-content: space-between; }.announcement p i, .announcement p span { display: none; }.announcement a { flex: 0 0 auto; margin-left: 12px; }
+  .announcement { font-size: 12px; gap: 14px; justify-content: space-between; line-height: 1.35; min-height: 50px; padding: 9px 18px; }.announcement p i, .announcement p span { display: none; }.announcement a { flex: 0 0 auto; margin-left: 0; }
   .nav-shell { height: 66px; padding: 0 18px; }.nav-cta { font-size: 0; height: 39px; padding: 0; width: 39px; }.nav-cta span { font-size: 15px; margin: auto; }
-  .v1-nav .nav-cta { font-size: 10px; padding: 0 14px; width: auto; }
+  .v1-nav .nav-cta { font-size: 13px; height: 44px; padding: 0 17px; width: auto; }
   .brand { font-size: 13px; }.brand-mark { height: 29px; width: 25px; }
   .v1-hero, .v2-hero { display: flex; flex-direction: column; min-height: auto; padding: 60px 20px 70px; }
   .v1-hero-copy { width: 100%; }.v1-hero h1 { font-size: clamp(50px, 14vw, 73px); }.v1-hero-copy > p { font-size: 15px; }.v1-hero-stage { margin: 35px auto 0; min-height: 470px; width: 100%; }.hero-book { left: 20%; width: 61%; }.page-right { right: 0; }.page-left { left: 0; }.hero-reassurance { justify-content: space-between; }.hero-reassurance span { font-size: 8px; }.hero-reassurance b { font-size: 12px; }
@@ -41,6 +41,7 @@
 }
 
 @media (max-width: 500px) {
+  .announcement { font-size: 11px; gap: 10px; padding: 9px 14px; }.v1-nav .nav-cta { font-size: 12px; padding: 0 14px; }
   .button-row { align-items: stretch; flex-direction: column; }.button { width: 100%; }.v1-hero-stage { min-height: 395px; }.orbit-note, .stage-caption { display: none; }.page-left { width: 31%; }.page-right { width: 32%; }.hero-book { height: 72%; left: 18%; width: 65%; }
   .hero-reassurance { gap: 8px; }.hero-reassurance span { letter-spacing: .04em; }
   .value-strip strong { font-size: 12px; }.value-strip small { font-size: 12px; }.statement { font-size: 34px; }
