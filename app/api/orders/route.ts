@@ -5,6 +5,23 @@ export const runtime = "nodejs";
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const HTML_ENTITIES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#039;",
+};
+
+type OrderNotificationStatus = "sent" | "skipped" | "failed";
+
+type NotificationOrder = {
+  id: string;
+  packageId: string;
+  purchaserName: string;
+  purchaserEmail: string;
+  themeId: string;
+};
 
 function readText(formData: FormData, key: string, maxLength: number, required = false) {
   const value = String(formData.get(key) || "").trim();
@@ -21,6 +38,149 @@ function isChecked(formData: FormData, key: string) {
 function storageObjectUrl(baseUrl: string, bucket: string, objectPath: string) {
   const encodedPath = objectPath.split("/").map(encodeURIComponent).join("/");
   return `${baseUrl}/storage/v1/object/${encodeURIComponent(bucket)}/${encodedPath}`;
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => HTML_ENTITIES[character]);
+}
+
+async function sendOrderNotification(order: NotificationOrder): Promise<OrderNotificationStatus> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.ORDER_NOTIFICATION_FROM?.trim();
+  const to = process.env.ORDER_NOTIFICATION_EMAIL?.trim() || siteConfig.contactEmail;
+
+  if (!apiKey || !from || !to) return "skipped";
+
+  const selectedPackage = siteConfig.packages.find((item) => item.id === order.packageId);
+  const selectedTheme = siteConfig.themes.find((item) => item.id === order.themeId);
+  const edition = selectedPackage?.name || order.packageId;
+  const theme = selectedTheme?.name || order.themeId;
+  const shortReference = order.id.slice(0, 8).toUpperCase();
+  const subject = `New ${edition} order — ${shortReference}`;
+  const text = [
+    "A paid Birthday Hero Book personalisation form has been submitted.",
+    "",
+    `Edition: ${edition}`,
+    `Order reference: ${order.id}`,
+    `Purchaser: ${order.purchaserName}`,
+    `Purchaser email: ${order.purchaserEmail}`,
+    `Adventure: ${theme}`,
+    "",
+    "The child's personalisation details and any optional photograph are stored securely in Supabase. Open the order there to fulfil it.",
+  ].join("\n");
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#181714;max-width:620px;margin:0 auto">
+      <p style="font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#ff5a3d;margin:0 0 12px">New paid order</p>
+      <h1 style="font-size:28px;line-height:1.2;margin:0 0 24px">${escapeHtml(edition)} · ${escapeHtml(shortReference)}</h1>
+      <table style="border-collapse:collapse;width:100%;font-size:16px">
+        <tr><td style="padding:10px 0;color:#6b6860">Order reference</td><td style="padding:10px 0;font-weight:700">${escapeHtml(order.id)}</td></tr>
+        <tr><td style="padding:10px 0;color:#6b6860">Purchaser</td><td style="padding:10px 0;font-weight:700">${escapeHtml(order.purchaserName)}</td></tr>
+        <tr><td style="padding:10px 0;color:#6b6860">Email</td><td style="padding:10px 0;font-weight:700"><a href="mailto:${escapeHtml(order.purchaserEmail)}" style="color:#181714">${escapeHtml(order.purchaserEmail)}</a></td></tr>
+        <tr><td style="padding:10px 0;color:#6b6860">Adventure</td><td style="padding:10px 0;font-weight:700">${escapeHtml(theme)}</td></tr>
+      </table>
+      <p style="margin:24px 0 0;padding:16px;background:#f5f0e7;border-radius:12px;color:#59564f">The child’s personalisation details and any optional photograph are stored securely in Supabase.</p>
+    </div>`;
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": `order-notification-${order.id}`,
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        reply_to: order.purchaserEmail,
+        subject,
+        html,
+        text,
+        tags: [{ name: "category", value: "new_order" }],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("Order notification failed.", { orderId: order.id, status: response.status });
+      return "failed";
+    }
+
+    return "sent";
+  } catch {
+    console.error("Order notification failed.", { orderId: order.id });
+    return "failed";
+  }
+}
+
+async function sendCustomerConfirmation(order: NotificationOrder): Promise<OrderNotificationStatus> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.ORDER_NOTIFICATION_FROM?.trim();
+
+  if (!apiKey || !from) return "skipped";
+
+  const selectedPackage = siteConfig.packages.find((item) => item.id === order.packageId);
+  const edition = selectedPackage?.name || order.packageId;
+  const shortReference = order.id.slice(0, 8).toUpperCase();
+  const subject = `Your Birthday Hero Book order is confirmed — ${shortReference}`;
+  const text = [
+    `Hi ${order.purchaserName},`,
+    "",
+    "Thank you — your payment and personalisation details have been received securely.",
+    "Our illustrators will now carefully create the adventure and email your finished book within five working days.",
+    "",
+    `Edition: ${edition}`,
+    `Order reference: ${shortReference}`,
+    "",
+    "For your child's privacy, we don't repeat their personalisation details in this email. They are stored securely and used only to create the book.",
+    "",
+    `Questions? Just reply to this email or contact ${siteConfig.contactEmail}.`,
+    "",
+    "With love,",
+    "Birthday Hero Book",
+  ].join("\n");
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#181714;max-width:620px;margin:0 auto">
+      <p style="font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#ff5a3d;margin:0 0 12px">Order confirmed</p>
+      <h1 style="font-size:28px;line-height:1.2;margin:0 0 18px">Thank you, ${escapeHtml(order.purchaserName)}.</h1>
+      <p style="font-size:16px;margin:0 0 18px">Your payment and personalisation details have been received securely. Our illustrators will now carefully create the adventure and email your finished book <strong>within five working days</strong>.</p>
+      <table style="border-collapse:collapse;width:100%;font-size:16px;margin:0 0 6px">
+        <tr><td style="padding:10px 0;color:#6b6860">Edition</td><td style="padding:10px 0;font-weight:700">${escapeHtml(edition)}</td></tr>
+        <tr><td style="padding:10px 0;color:#6b6860">Order reference</td><td style="padding:10px 0;font-weight:700">${escapeHtml(shortReference)}</td></tr>
+      </table>
+      <p style="margin:22px 0;padding:16px;background:#f5f0e7;border-radius:12px;color:#59564f;font-size:14px">For your child’s privacy, we don’t repeat their personalisation details in this email. They are stored securely and used only to create the book.</p>
+      <p style="font-size:14px;color:#59564f;margin:0">Questions? Just reply to this email or contact <a href="mailto:${escapeHtml(siteConfig.contactEmail)}" style="color:#181714">${escapeHtml(siteConfig.contactEmail)}</a>.</p>
+      <p style="font-size:14px;color:#59564f;margin:18px 0 0">With love,<br />Birthday Hero Book</p>
+    </div>`;
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": `order-confirmation-${order.id}`,
+      },
+      body: JSON.stringify({
+        from,
+        to: [order.purchaserEmail],
+        reply_to: siteConfig.contactEmail,
+        subject,
+        html,
+        text,
+        tags: [{ name: "category", value: "order_confirmation" }],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("Customer confirmation failed.", { orderId: order.id, status: response.status });
+      return "failed";
+    }
+
+    return "sent";
+  } catch {
+    console.error("Customer confirmation failed.", { orderId: order.id });
+    return "failed";
+  }
 }
 
 export async function POST(request: Request) {
@@ -46,14 +206,17 @@ export async function POST(request: Request) {
     const theme = readText(formData, "theme", 30, true);
     const age = Number(readText(formData, "age", 2, true));
     const email = readText(formData, "email", 254, true);
+    const purchaserName = readText(formData, "purchaserName", 120, true);
+    const childFirstName = readText(formData, "childFirstName", 24, true);
     const permissionConfirmed = isChecked(formData, "permission");
     const privacyAcknowledged = isChecked(formData, "privacyAcknowledged");
 
     if (!packageId || !siteConfig.packages.some((item) => item.id === packageId)) throw new Error("Please choose a valid edition.");
     if (!stripeSessionId || !/^cs_(?:test_|live_)?[A-Za-z0-9]+$/.test(stripeSessionId)) throw new Error("We could not confirm the Stripe payment reference.");
-    if (!siteConfig.themes.some((item) => item.id === theme)) throw new Error("Please choose a valid adventure.");
+    if (!theme || !siteConfig.themes.some((item) => item.id === theme)) throw new Error("Please choose a valid adventure.");
     if (!Number.isInteger(age) || age < 3 || age > 10) throw new Error("Please choose an age from 3 to 10.");
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Please enter a valid email address.");
+    if (!purchaserName || !childFirstName) throw new Error("Please complete the purchaser and birthday hero details.");
     if (!permissionConfirmed || !privacyAcknowledged) throw new Error("Permission and privacy confirmation are required.");
 
     const expectedPaymentLink = process.env[`STRIPE_${packageId.toUpperCase()}_PAYMENT_LINK_ID`];
@@ -99,9 +262,9 @@ export async function POST(request: Request) {
       stripe_session_id: stripeSessionId,
       stripe_payment_link_id: stripeSession.payment_link,
       stripe_payment_status: stripeSession.payment_status,
-      purchaser_name: readText(formData, "purchaserName", 120, true),
+      purchaser_name: purchaserName,
       purchaser_email: email,
-      child_first_name: readText(formData, "childFirstName", 24, true),
+      child_first_name: childFirstName,
       child_age: age,
       appearance: readText(formData, "appearance", 2000, true),
       theme_id: theme,
@@ -139,7 +302,19 @@ export async function POST(request: Request) {
       throw new Error("We could not save the order details. Please contact us if you have already paid.");
     }
 
-    return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
+    const emailOrder: NotificationOrder = {
+      id: orderId,
+      packageId,
+      purchaserName,
+      purchaserEmail: email,
+      themeId: theme,
+    };
+    const [staffAlert, customerConfirmation] = await Promise.all([
+      sendOrderNotification(emailOrder),
+      sendCustomerConfirmation(emailOrder),
+    ]);
+
+    return NextResponse.json({ ok: true, notifications: { staffAlert, customerConfirmation } }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const message = error instanceof Error ? error.message : "We could not save the order details.";
     return NextResponse.json({ error: message }, { status: 400, headers: { "Cache-Control": "no-store" } });

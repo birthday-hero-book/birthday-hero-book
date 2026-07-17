@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./responsive.css";
+import { CookieConsent } from "@/components/CookieConsent";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://birthdayherobook.com"),
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         {children}
-        {/* Analytics placeholder: add Vercel Analytics or your consent-aware provider here. */}
+        <CookieConsent />
       </body>
     </html>
   );

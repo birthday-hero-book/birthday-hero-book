@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Brand } from "./Brand";
+import { CookieSettingsButton } from "./CookieSettingsButton";
 import { siteConfig } from "@/lib/site-config";
 
 export function SiteFooter({ inverse = false }: { inverse?: boolean }) {
@@ -20,6 +21,8 @@ export function SiteFooter({ inverse = false }: { inverse?: boolean }) {
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
           <Link href="/refund-and-corrections">Refund & Corrections</Link>
+          <Link href="/cookies">Cookie Policy</Link>
+          <CookieSettingsButton />
           <a href={`mailto:${siteConfig.contactEmail}`}>Contact</a>
         </nav>
       </div>
