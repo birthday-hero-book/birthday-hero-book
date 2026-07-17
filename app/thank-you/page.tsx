@@ -2,14 +2,18 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Brand } from "@/components/Brand";
 import { siteConfig } from "@/lib/site-config";
 
 function ThankYouPageContent() {
   const params = useSearchParams();
-  const name = params.get("hero") || "your hero";
   const isDemo = params.get("demo") === "1";
+  const [name, setName] = useState("your hero");
+  useEffect(() => {
+    const stored = window.sessionStorage.getItem("bhb_hero");
+    if (stored) setName(stored);
+  }, []);
   return (
     <main className="thanks-page">
       <header><Brand inverse /></header>
