@@ -10,6 +10,8 @@ export const CONSENT_MAX_AGE_DAYS = 180;
 
 // First-party referral-attribution cookie. Only set with marketing consent.
 export const REFERRAL_COOKIE = "bhb_ref";
+export const REFERRAL_MAX_AGE_DAYS = 60;
+export const REFERRAL_CODE_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
 
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
@@ -45,6 +47,25 @@ export function writeConsent(analytics: boolean, marketing: boolean): ConsentRec
 export function clearReferralCookie() {
   if (typeof document === "undefined") return;
   document.cookie = `${REFERRAL_COOKIE}=; Max-Age=0; Path=/; SameSite=Lax`;
+}
+
+export function setReferralCookie(code: string) {
+  if (typeof document === "undefined" || !REFERRAL_CODE_PATTERN.test(code)) return;
+  const maxAge = REFERRAL_MAX_AGE_DAYS * 24 * 60 * 60;
+  document.cookie = `${REFERRAL_COOKIE}=${encodeURIComponent(code)}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
+}
+
+export function hasReferralCookie(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.cookie.split("; ").some((row) => row.startsWith(`${REFERRAL_COOKIE}=`));
+}
+
+// A partner referral that arrives before marketing consent is carried in ?ref=…;
+// once consent is granted the client promotes it to the attribution cookie.
+export function readRefFromUrl(): string | null {
+  if (typeof window === "undefined") return null;
+  const ref = new URLSearchParams(window.location.search).get("ref");
+  return ref && REFERRAL_CODE_PATTERN.test(ref) ? ref : null;
 }
 
 // Best-effort removal of Google Analytics cookies when analytics is withdrawn.

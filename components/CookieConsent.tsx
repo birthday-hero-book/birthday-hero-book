@@ -3,12 +3,18 @@
 import Script from "next/script";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { GA_MEASUREMENT_ID, clearAnalyticsCookies, clearReferralCookie, readConsent, writeConsent, type ConsentRecord } from "@/lib/consent";
+import { GA_MEASUREMENT_ID, clearAnalyticsCookies, clearReferralCookie, hasReferralCookie, readConsent, readRefFromUrl, setReferralCookie, writeConsent, type ConsentRecord } from "@/lib/consent";
 
 // GA respects a global window flag to stop sending immediately (no reload needed).
 function setGaDisabled(disabled: boolean) {
   if (!GA_MEASUREMENT_ID || typeof window === "undefined") return;
   (window as unknown as Record<string, boolean>)[`ga-disable-${GA_MEASUREMENT_ID}`] = disabled;
+}
+
+// With marketing consent, promote a ?ref=… partner code into the attribution cookie.
+function captureReferral() {
+  const ref = readRefFromUrl();
+  if (ref && !hasReferralCookie()) setReferralCookie(ref);
 }
 
 export function CookieConsent() {
@@ -25,6 +31,7 @@ export function CookieConsent() {
       setAnalyticsChoice(existing.analytics);
       setMarketingChoice(existing.marketing);
       setGaDisabled(!existing.analytics);
+      if (existing.marketing) captureReferral();
     } else {
       setShowBanner(true);
     }
@@ -47,7 +54,8 @@ export function CookieConsent() {
     setShowPrefs(false);
     setGaDisabled(!analytics);
     if (!analytics) clearAnalyticsCookies();
-    if (!marketing) clearReferralCookie();
+    if (marketing) captureReferral();
+    else clearReferralCookie();
   }
 
   const analyticsGranted = record?.analytics === true;

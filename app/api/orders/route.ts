@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { siteConfig } from "@/lib/site-config";
+import { REFERRAL_CODE_PATTERN, REFERRAL_COOKIE } from "@/lib/consent";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,12 @@ function readText(formData: FormData, key: string, maxLength: number, required =
 function isChecked(formData: FormData, key: string) {
   const value = formData.get(key);
   return value === "on" || value === "true" || value === "1";
+}
+
+function readCookie(cookieHeader: string | null, name: string): string | null {
+  if (!cookieHeader) return null;
+  const match = cookieHeader.split("; ").find((row) => row.startsWith(`${name}=`));
+  return match ? decodeURIComponent(match.slice(name.length + 1)) : null;
 }
 
 function storageObjectUrl(baseUrl: string, bucket: string, objectPath: string) {
@@ -256,6 +263,32 @@ export async function POST(request: Request) {
       if (!uploadResponse.ok) throw new Error("The optional photograph could not be stored securely. Please try again.");
     }
 
+    // Affiliate attribution: if the visitor arrived via a partner referral link
+    // (and accepted marketing cookies), credit this paid order and record commission.
+    const referralCode = readCookie(request.headers.get("cookie"), REFERRAL_COOKIE);
+    let attribution: { affiliate_id: string; commission_amount: number; commission_status: string } | null = null;
+    if (referralCode && REFERRAL_CODE_PATTERN.test(referralCode)) {
+      try {
+        const lookup = await fetch(
+          `${supabaseUrl}/rest/v1/affiliates?select=id,commission_rate&status=eq.active&code=ilike.${encodeURIComponent(referralCode)}`,
+          { headers: { apikey: supabaseSecretKey, Authorization: `Bearer ${supabaseSecretKey}` }, cache: "no-store" },
+        );
+        if (lookup.ok) {
+          const affiliate = ((await lookup.json()) as Array<{ id: string; commission_rate: number }>)[0];
+          if (affiliate) {
+            const price = siteConfig.packages.find((item) => item.id === packageId)?.price ?? 0;
+            attribution = {
+              affiliate_id: affiliate.id,
+              commission_amount: Math.round(price * Number(affiliate.commission_rate) * 100) / 100,
+              commission_status: "pending",
+            };
+          }
+        }
+      } catch {
+        // Attribution is best-effort; never block a paid order on it.
+      }
+    }
+
     const order = {
       id: orderId,
       package_id: packageId,
@@ -279,6 +312,7 @@ export async function POST(request: Request) {
       marketing_consent: isChecked(formData, "marketingConsent"),
       photo_path: photoPath,
       photo_mime: photo?.type || null,
+      ...(attribution ?? {}),
       status: "received",
     };
 
