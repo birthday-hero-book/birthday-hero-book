@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Brand } from "@/components/Brand";
-import { CommissionBadge } from "@/components/CommissionBadge";
+import { AdminPartnerList } from "@/components/AdminPartnerList";
 import { getAuthUser, isAdminEmail } from "@/lib/supabase-auth";
-import { listAffiliatesWithStats, COMMISSION_STATUSES } from "@/lib/affiliate-data";
-import { siteConfig } from "@/lib/site-config";
+import { listAffiliatesWithStats } from "@/lib/affiliate-data";
 import { signOut } from "../partners/actions";
-import { approveAllPending, markApprovedPaid, updateOrderCommission } from "./actions";
 import "../portal.css";
 
 export const metadata: Metadata = {
@@ -17,8 +15,6 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const GBP = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
-const DATE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
-const packageName = (id: string) => siteConfig.packages.find((item) => item.id === id)?.name ?? id;
 
 export default async function AdminPage() {
   const user = await getAuthUser();
@@ -53,8 +49,9 @@ export default async function AdminPage() {
         <p className="portal-eyebrow">Admin</p>
         <h1>Affiliate overview</h1>
         <p className="portal-lead">
-          Every partner’s traffic, conversions and commission. Use the payout controls to approve pending
-          commission, then mark it as paid once you’ve sent the money.
+          Every partner’s traffic, conversions and commission. Approve pending commission, then mark it as paid
+          once you’ve sent the money — best done only after each order’s refund window has passed, so you’re
+          paying on settled, final orders.
         </p>
 
         <div className="portal-stats">
@@ -65,104 +62,7 @@ export default async function AdminPage() {
           <div className="portal-stat"><span>Paid</span><b>{GBP.format(totals.paid)}</b></div>
         </div>
 
-        {affiliates.length === 0 ? (
-          <div className="portal-card">
-            <p className="portal-empty">
-              No partners yet. Add an affiliate row in Supabase (with the partner’s email and referral code)
-              to get started.
-            </p>
-          </div>
-        ) : (
-          affiliates.map((affiliate) => {
-            const { stats } = affiliate;
-            const ratePct = Math.round(Number(affiliate.commission_rate) * 100);
-            return (
-              <div className="portal-card" key={affiliate.id}>
-                <div className="portal-partner-head">
-                  <h2>
-                    {affiliate.name}
-                    {affiliate.status === "paused" && (
-                      <span className="portal-badge portal-badge--none">Paused</span>
-                    )}
-                  </h2>
-                  <p className="portal-note">
-                    /r/{affiliate.code} · {affiliate.email} · {ratePct}% commission
-                  </p>
-                </div>
-
-                <div className="portal-stats">
-                  <div className="portal-stat"><span>Clicks</span><b>{stats.clicks}</b></div>
-                  <div className="portal-stat"><span>Orders</span><b>{stats.conversions}</b></div>
-                  <div className="portal-stat"><span>Pending</span><b>{GBP.format(stats.commission.pending)}</b></div>
-                  <div className="portal-stat"><span>Approved</span><b>{GBP.format(stats.commission.approved)}</b></div>
-                  <div className="portal-stat"><span>Paid</span><b>{GBP.format(stats.commission.paid)}</b></div>
-                </div>
-
-                <div className="portal-actions">
-                  <form action={approveAllPending}>
-                    <input type="hidden" name="affiliateId" value={affiliate.id} />
-                    <button className="portal-btn" type="submit" disabled={stats.commission.pending <= 0}>
-                      Approve pending ({GBP.format(stats.commission.pending)})
-                    </button>
-                  </form>
-                  <form action={markApprovedPaid}>
-                    <input type="hidden" name="affiliateId" value={affiliate.id} />
-                    <button className="portal-btn portal-btn--primary" type="submit" disabled={stats.commission.approved <= 0}>
-                      Mark approved as paid ({GBP.format(stats.commission.approved)})
-                    </button>
-                  </form>
-                </div>
-
-                {stats.orders.length > 0 && (
-                  <details className="portal-details">
-                    <summary>
-                      {stats.orders.length} referred order{stats.orders.length === 1 ? "" : "s"} — view &amp; adjust
-                    </summary>
-                    <div className="portal-table-wrap">
-                      <table className="portal-table">
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Edition</th>
-                            <th className="portal-th-num">Commission</th>
-                            <th>Status</th>
-                            <th>Change</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {stats.orders.map((order) => (
-                            <tr key={order.id}>
-                              <td>{DATE.format(new Date(order.submitted_at))}</td>
-                              <td>{packageName(order.package_id)}</td>
-                              <td className="portal-num">{GBP.format(Number(order.commission_amount ?? 0))}</td>
-                              <td><CommissionBadge status={order.commission_status} /></td>
-                              <td>
-                                <form className="portal-inline-form" action={updateOrderCommission}>
-                                  <input type="hidden" name="orderId" value={order.id} />
-                                  <select
-                                    className="portal-select"
-                                    name="status"
-                                    defaultValue={order.commission_status}
-                                    aria-label="Commission status"
-                                  >
-                                    {COMMISSION_STATUSES.map((status) => (
-                                      <option key={status} value={status}>{status}</option>
-                                    ))}
-                                  </select>
-                                  <button className="portal-btn portal-btn--ghost" type="submit">Update</button>
-                                </form>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </details>
-                )}
-              </div>
-            );
-          })
-        )}
+        <AdminPartnerList affiliates={affiliates} />
       </div>
     </main>
   );

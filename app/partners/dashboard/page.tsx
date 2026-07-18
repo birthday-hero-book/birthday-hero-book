@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Brand } from "@/components/Brand";
-import { CommissionBadge } from "@/components/CommissionBadge";
+import { ReferralLinkBox } from "@/components/ReferralLinkBox";
+import { PartnerOrdersTable } from "@/components/PartnerOrdersTable";
 import { getAuthUser, isAdminEmail } from "@/lib/supabase-auth";
 import {
   getAffiliateByAuthUserId,
@@ -24,8 +25,6 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const GBP = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
-const DATE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
-const packageName = (id: string) => siteConfig.packages.find((item) => item.id === id)?.name ?? id;
 
 function PortalHeader({ email }: { email: string }) {
   return (
@@ -89,10 +88,7 @@ export default async function PartnerDashboardPage() {
             " Your account is currently paused, so new referrals won’t be tracked. Please get in touch."}
         </p>
 
-        <div className="portal-linkbox">
-          <span>Your referral link</span>
-          <code>{referralLink}</code>
-        </div>
+        <ReferralLinkBox link={referralLink} />
 
         <div className="portal-stats">
           <div className="portal-stat">
@@ -119,37 +115,13 @@ export default async function PartnerDashboardPage() {
 
         <div className="portal-card">
           <h2>Your referred orders</h2>
-          {stats.orders.length === 0 ? (
-            <p className="portal-empty">No referred orders yet. Share your link to get started!</p>
-          ) : (
-            <div className="portal-table-wrap">
-              <table className="portal-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Edition</th>
-                    <th className="portal-th-num">Commission</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.orders.map((order) => (
-                    <tr key={order.id}>
-                      <td>{DATE.format(new Date(order.submitted_at))}</td>
-                      <td>{packageName(order.package_id)}</td>
-                      <td className="portal-num">{GBP.format(Number(order.commission_amount ?? 0))}</td>
-                      <td><CommissionBadge status={order.commission_status} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <PartnerOrdersTable orders={stats.orders} />
         </div>
 
         <p className="portal-note" style={{ marginTop: "22px" }}>
-          Commission is confirmed once an order is approved, and paid out after that. Questions about your
-          earnings? Contact us at {siteConfig.contactEmail}.
+          Commission is confirmed once an order is complete and its refund period has passed, then paid out
+          shortly after — this short wait simply makes sure every order is final and settled before commission
+          is released. Questions about your earnings? Contact us at {siteConfig.contactEmail}.
         </p>
       </div>
     </main>
