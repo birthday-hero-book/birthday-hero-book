@@ -1,4 +1,5 @@
 import { getSupabaseServiceConfig } from "@/lib/supabase-config";
+import { COMMISSION_STATUSES, type CommissionStatus } from "@/lib/commission";
 
 // Server-only affiliate data access. Uses the raw service-role REST calls the
 // rest of the app uses (orders route, referral capture) rather than an SDK, so
@@ -6,8 +7,7 @@ import { getSupabaseServiceConfig } from "@/lib/supabase-config";
 // policies. Only ever call these from server code (route handlers, server
 // actions, server components) — never from a client component.
 
-export const COMMISSION_STATUSES = ["none", "pending", "approved", "paid", "reversed"] as const;
-export type CommissionStatus = (typeof COMMISSION_STATUSES)[number];
+export { COMMISSION_STATUSES, type CommissionStatus } from "@/lib/commission";
 
 export type Affiliate = {
   id: string;

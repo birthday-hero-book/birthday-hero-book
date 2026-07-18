@@ -1,14 +1,6 @@
-import type { CommissionStatus } from "@/lib/affiliate-data";
-
-const LABELS: Record<CommissionStatus, string> = {
-  none: "None",
-  pending: "Pending",
-  approved: "Approved",
-  paid: "Paid",
-  reversed: "Reversed",
-};
+import { COMMISSION_STATUS_LABELS, type CommissionStatus } from "@/lib/commission";
 
 export function CommissionBadge({ status }: { status: CommissionStatus }) {
-  const key = (status in LABELS ? status : "none") as CommissionStatus;
-  return <span className={`portal-badge portal-badge--${key}`}>{LABELS[key]}</span>;
+  const key = (status in COMMISSION_STATUS_LABELS ? status : "none") as CommissionStatus;
+  return <span className={`portal-badge portal-badge--${key}`}>{COMMISSION_STATUS_LABELS[key]}</span>;
 }
