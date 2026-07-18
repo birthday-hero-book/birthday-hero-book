@@ -5,6 +5,7 @@ import { CommissionBadge } from "@/components/CommissionBadge";
 import { siteConfig } from "@/lib/site-config";
 import { COMMISSION_STATUSES } from "@/lib/commission";
 import { approveAllPending, markApprovedPaid, updateOrderCommission, updateAffiliateAction } from "@/app/admin/actions";
+import { DeletePartnerControl } from "@/components/DeletePartnerControl";
 import type { AffiliateWithStats } from "@/lib/affiliate-data";
 
 const GBP = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
@@ -191,6 +192,10 @@ export function AdminPartnerList({ affiliates }: { affiliates: AffiliateWithStat
                   </div>
                 </details>
               )}
+
+              <div className="portal-remove">
+                <DeletePartnerControl affiliateId={affiliate.id} name={affiliate.name} />
+              </div>
             </div>
           );
         })
