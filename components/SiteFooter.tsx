@@ -16,6 +16,7 @@ export function SiteFooter({ inverse = false }: { inverse?: boolean }) {
           <a href="#adventures">Adventures</a>
           <a href="#pricing">Pricing</a>
           <a href="#faqs">FAQs</a>
+          <Link href="/partners">Partner sign in</Link>
         </nav>
         <nav aria-label="Policies">
           <Link href="/privacy">Privacy</Link>

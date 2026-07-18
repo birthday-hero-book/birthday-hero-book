@@ -29,6 +29,7 @@ export default function VersionOne() {
           <a href="#adventures">Adventures</a>
           <a href="#pricing">Pricing</a>
           <a href="#faqs">FAQs</a>
+          <Link href="/partners">Partner sign in</Link>
         </nav>
         <Link className="nav-cta" href="#pricing">Create Their Book</Link>
       </header>
