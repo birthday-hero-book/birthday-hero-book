@@ -108,3 +108,5 @@
 .portal-add-form .portal-btn, .portal-edit-form .portal-btn { align-self: flex-start; }
 .portal-hint { color: #77726a; font-size: 12px; line-height: 1.5; margin: 0; }
 .portal-success-inline { background: #e6ebde; border: 1px solid #b8c4ad; border-radius: 8px; color: #45513f; font-size: 13px; margin: 0; padding: 11px 14px; }
+.portal-check { align-items: center; color: #302d29; cursor: pointer; display: flex; flex-direction: row; font-size: 13px; font-weight: 500; gap: 9px; line-height: 1.4; }
+.portal-check input { accent-color: var(--orange); flex: 0 0 auto; height: 17px; width: 17px; }
