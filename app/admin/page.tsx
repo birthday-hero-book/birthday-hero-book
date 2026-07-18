@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Brand } from "@/components/Brand";
 import { AdminPartnerList } from "@/components/AdminPartnerList";
+import { AddPartnerForm } from "@/components/AddPartnerForm";
 import { getAuthUser, isAdminEmail } from "@/lib/supabase-auth";
 import { listAffiliatesWithStats } from "@/lib/affiliate-data";
 import { signOut } from "../partners/actions";
@@ -61,6 +62,8 @@ export default async function AdminPage() {
           <div className="portal-stat"><span>Owed</span><b>{GBP.format(totals.owed)}</b><small>Pending + approved</small></div>
           <div className="portal-stat"><span>Paid</span><b>{GBP.format(totals.paid)}</b></div>
         </div>
+
+        <AddPartnerForm />
 
         <AdminPartnerList affiliates={affiliates} />
       </div>
