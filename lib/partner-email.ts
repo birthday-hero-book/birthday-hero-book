@@ -57,7 +57,9 @@ export async function sendPartnerWelcome(input: {
       <p style="font-size:16px;margin:0 0 22px">You're all set up as a Birthday Hero Book partner. Share your personal referral link and you'll earn <strong>${ratePct}% commission</strong> on every order made through it.</p>
       <div style="background:#171c1c;border-radius:11px;padding:18px 20px;margin:0 0 24px">
         <p style="font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#aaa8a0;margin:0 0 8px">Your referral link</p>
-        <p style="font-size:16px;font-weight:700;color:#ffffff;margin:0;word-break:break-all">${escapeHtml(referralLink)}</p>
+        <p style="margin:0;word-break:break-all">
+          <a href="${escapeHtml(referralLink)}" style="color:#ffffff !important;text-decoration:none;font-size:16px;font-weight:700;word-break:break-all"><span style="color:#ffffff !important;text-decoration:none">${escapeHtml(referralLink)}</span></a>
+        </p>
       </div>
       <p style="font-size:15px;margin:0 0 24px">Sign in any time to see your clicks, orders and commission — no password needed, we email you a secure link.</p>
       <p style="margin:0 0 30px">
