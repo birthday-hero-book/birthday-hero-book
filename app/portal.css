@@ -28,6 +28,8 @@
 .portal-input { background: #fffdf8; border: 1px solid #c9c3ba; border-radius: 8px; color: #302d29; font-size: 16px; outline: 0; padding: 14px 15px; }
 .portal-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(18,58,72,.1); }
 .portal-note { color: #77726a; font-size: 12px; line-height: 1.6; margin: 0; }
+.portal-note a { color: var(--ink); text-decoration: underline; }
+.portal-note a:hover { color: var(--orange); }
 .portal-error { background: #fff0ed; border: 1px solid #d88a7a; border-radius: 8px; color: #8a2f22; font-size: 13px; line-height: 1.55; margin: 22px 0 0; padding: 12px 14px; }
 .portal-success { background: #e6ebde; border: 1px solid #b8c4ad; border-radius: 10px; color: #45513f; font-size: 14px; line-height: 1.6; margin-top: 26px; padding: 20px 22px; }
 .portal-success strong { display: block; font-size: 17px; margin-bottom: 7px; }

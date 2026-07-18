@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Brand } from "@/components/Brand";
 import { requestMagicLink } from "./actions";
+import { siteConfig } from "@/lib/site-config";
 import "../portal.css";
 
 export const metadata: Metadata = {
@@ -70,7 +71,8 @@ export default async function PartnersSignInPage({ searchParams }: { searchParam
                 Email me a sign-in link
               </button>
               <p className="portal-note">
-                Partner accounts are set up by invitation. Interested in referring Birthday Hero Book? Just get in touch.
+                Partner accounts are set up by invitation. Interested in referring Birthday Hero Book? Email us at{" "}
+                <a href={`mailto:${siteConfig.contactEmail}`}>{siteConfig.contactEmail}</a>.
               </p>
             </form>
           </>
