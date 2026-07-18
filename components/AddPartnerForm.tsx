@@ -40,6 +40,10 @@ export function AddPartnerForm() {
           </label>
         </div>
         <p className="portal-hint">Their referral link will be birthdayherobook.com/r/&lt;code&gt;. Use the same email they’ll sign in with.</p>
+        <label className="portal-check">
+          <input type="checkbox" name="welcome" defaultChecked />
+          Email the partner a welcome with their referral link
+        </label>
         {state.error && <p className="portal-error" role="alert">{state.error}</p>}
         {state.ok && <p className="portal-success-inline" role="status">{state.message}</p>}
         <button className="portal-btn portal-btn--primary" type="submit" disabled={pending}>

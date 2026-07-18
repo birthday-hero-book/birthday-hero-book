@@ -11,6 +11,8 @@ import {
   COMMISSION_STATUSES,
   type CommissionStatus,
 } from "@/lib/affiliate-data";
+import { getRequestOrigin } from "@/lib/request-origin";
+import { sendPartnerWelcome } from "@/lib/partner-email";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CODE_RE = /^[A-Za-z0-9_-]{1,64}$/;
@@ -66,6 +68,8 @@ export async function createAffiliateAction(
   const code = String(formData.get("code") || "").trim();
   const percent = Number(String(formData.get("rate") || "").trim());
   const status = String(formData.get("status") || "active");
+  const welcome = formData.get("welcome");
+  const shouldWelcome = welcome === "on" || welcome === "true" || welcome === "1";
 
   if (!name || name.length > 120) return { error: "Enter the partner’s name." };
   if (!EMAIL_RE.test(email) || email.length > 254) return { error: "Enter a valid email address." };
@@ -76,11 +80,23 @@ export async function createAffiliateAction(
   // Don’t let a second row quietly shadow an existing partner’s email.
   if (await getAffiliateByEmail(email)) return { error: "A partner with that email already exists." };
 
-  const result = await createAffiliate({ name, email, code, commissionRate: percentToRate(percent), status });
+  const rate = percentToRate(percent);
+  const result = await createAffiliate({ name, email, code, commissionRate: rate, status });
   if (!result.ok) return { error: result.error ?? "Could not add the partner." };
 
   revalidatePath("/admin");
-  return { ok: true, message: `${name} added — their link is /r/${code}.` };
+
+  let emailNote = "";
+  if (shouldWelcome) {
+    const origin = await getRequestOrigin();
+    const sent = await sendPartnerWelcome({ name, email, code, commissionRate: rate, origin });
+    emailNote =
+      sent === "sent"
+        ? ` We’ve emailed a welcome to ${email}.`
+        : " (The welcome email couldn’t be sent — check the email settings.)";
+  }
+
+  return { ok: true, message: `${name} added — their link is /r/${code}.${emailNote}` };
 }
 
 // Adjust an existing partner's commission rate and active/paused status.
