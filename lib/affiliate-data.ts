@@ -278,3 +278,19 @@ export async function updateAffiliateSettings(
     return false;
   }
 }
+
+// Delete a partner. Their click history cascades away (FK on delete cascade);
+// any orders they referred are kept but unlinked (FK on delete set null).
+export async function deleteAffiliate(affiliateId: string): Promise<boolean> {
+  const cfg = getSupabaseServiceConfig();
+  if (!cfg || !isUuid(affiliateId)) return false;
+  try {
+    const res = await fetch(`${cfg.url}/rest/v1/affiliates?id=eq.${affiliateId}`, {
+      method: "DELETE",
+      headers: { ...serviceHeaders(cfg.key), Prefer: "return=minimal" },
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}

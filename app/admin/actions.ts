@@ -7,6 +7,7 @@ import {
   setOrderCommissionStatus,
   createAffiliate,
   updateAffiliateSettings,
+  deleteAffiliate,
   getAffiliateByEmail,
   COMMISSION_STATUSES,
   type CommissionStatus,
@@ -108,5 +109,13 @@ export async function updateAffiliateAction(formData: FormData): Promise<void> {
   if (!Number.isFinite(percent) || percent < 0 || percent > 100) return;
   if (status !== "active" && status !== "paused") return;
   await updateAffiliateSettings(affiliateId, { commissionRate: percentToRate(percent), status });
+  revalidatePath("/admin");
+}
+
+// Permanently delete a partner. The UI gates this behind a two-step confirm.
+export async function deleteAffiliateAction(formData: FormData): Promise<void> {
+  if (!(await requireAdmin())) return;
+  const affiliateId = String(formData.get("affiliateId") || "");
+  await deleteAffiliate(affiliateId);
   revalidatePath("/admin");
 }
