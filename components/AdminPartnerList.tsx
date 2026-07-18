@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { CommissionBadge } from "@/components/CommissionBadge";
 import { siteConfig } from "@/lib/site-config";
 import { COMMISSION_STATUSES } from "@/lib/commission";
-import { approveAllPending, markApprovedPaid, updateOrderCommission } from "@/app/admin/actions";
+import { approveAllPending, markApprovedPaid, updateOrderCommission, updateAffiliateAction } from "@/app/admin/actions";
 import type { AffiliateWithStats } from "@/lib/affiliate-data";
 
 const GBP = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
@@ -86,7 +86,7 @@ export function AdminPartnerList({ affiliates }: { affiliates: AffiliateWithStat
       ) : (
         rows.map((affiliate) => {
           const { stats } = affiliate;
-          const ratePct = Math.round(Number(affiliate.commission_rate) * 100);
+          const ratePct = Math.round(Number(affiliate.commission_rate) * 10000) / 100;
           return (
             <div className="portal-card" key={affiliate.id}>
               <div className="portal-partner-head">
@@ -123,6 +123,27 @@ export function AdminPartnerList({ affiliates }: { affiliates: AffiliateWithStat
                   </button>
                 </form>
               </div>
+
+              <details className="portal-details">
+                <summary>Edit rate &amp; status</summary>
+                <form className="portal-edit-form" action={updateAffiliateAction}>
+                  <input type="hidden" name="affiliateId" value={affiliate.id} />
+                  <div className="portal-field-grid">
+                    <label className="portal-label">
+                      Commission %
+                      <input className="portal-input" type="number" name="rate" min={0} max={100} step={0.1} defaultValue={ratePct} />
+                    </label>
+                    <label className="portal-label">
+                      Status
+                      <select className="portal-select" name="status" defaultValue={affiliate.status}>
+                        <option value="active">Active</option>
+                        <option value="paused">Paused</option>
+                      </select>
+                    </label>
+                  </div>
+                  <button className="portal-btn" type="submit">Save changes</button>
+                </form>
+              </details>
 
               {stats.orders.length > 0 && (
                 <details className="portal-details">

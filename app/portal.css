@@ -95,3 +95,16 @@
 .portal-search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(18,58,72,.1); }
 .portal-sort { align-items: center; color: #77726a; display: inline-flex; font-size: 12px; font-weight: 650; gap: 8px; white-space: nowrap; }
 .portal-sort select { background: #fffdf8; border: 1px solid #c9c3ba; border-radius: 8px; color: #302d29; font-size: 13px; padding: 9px 11px; }
+
+/* Add-partner + edit-partner forms */
+.portal-add { padding: 0; }
+.portal-add > summary { cursor: pointer; font-size: 15px; font-weight: 650; list-style: none; padding: 20px 26px; }
+.portal-add > summary::-webkit-details-marker { display: none; }
+.portal-add[open] > summary { border-bottom: 1px solid #e0d9cc; color: var(--orange); }
+.portal-add-form { display: flex; flex-direction: column; gap: 16px; padding: 22px 26px 26px; }
+.portal-edit-form { display: flex; flex-direction: column; gap: 16px; padding: 14px 0 4px; }
+.portal-field-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.portal-field-grid .portal-input, .portal-field-grid .portal-select { width: 100%; }
+.portal-add-form .portal-btn, .portal-edit-form .portal-btn { align-self: flex-start; }
+.portal-hint { color: #77726a; font-size: 12px; line-height: 1.5; margin: 0; }
+.portal-success-inline { background: #e6ebde; border: 1px solid #b8c4ad; border-radius: 8px; color: #45513f; font-size: 13px; margin: 0; padding: 11px 14px; }

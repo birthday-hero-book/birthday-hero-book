@@ -226,3 +226,55 @@ export async function bulkAdvanceCommissionForAffiliate(
     return false;
   }
 }
+
+export type NewAffiliateInput = {
+  name: string;
+  email: string;
+  code: string;
+  commissionRate: number; // fraction, e.g. 0.2 for 20%
+  status: "active" | "paused";
+};
+
+// Create a partner. Returns a friendly error rather than throwing, so the admin
+// form can show it. The DB's unique index on lower(code) surfaces as a 409.
+export async function createAffiliate(input: NewAffiliateInput): Promise<{ ok: boolean; error?: string }> {
+  const cfg = getSupabaseServiceConfig();
+  if (!cfg) return { ok: false, error: "Secure storage isn’t configured." };
+  try {
+    const res = await fetch(`${cfg.url}/rest/v1/affiliates`, {
+      method: "POST",
+      headers: { ...serviceHeaders(cfg.key), "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({
+        name: input.name,
+        email: input.email,
+        code: input.code,
+        commission_rate: input.commissionRate,
+        status: input.status,
+      }),
+    });
+    if (res.status === 409) return { ok: false, error: "That referral code is already taken — choose another." };
+    if (!res.ok) return { ok: false, error: "Could not create the partner. Please try again." };
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Could not create the partner. Please try again." };
+  }
+}
+
+// Update an existing partner's commission rate and active/paused status.
+export async function updateAffiliateSettings(
+  affiliateId: string,
+  input: { commissionRate: number; status: "active" | "paused" },
+): Promise<boolean> {
+  const cfg = getSupabaseServiceConfig();
+  if (!cfg || !isUuid(affiliateId)) return false;
+  try {
+    const res = await fetch(`${cfg.url}/rest/v1/affiliates?id=eq.${affiliateId}`, {
+      method: "PATCH",
+      headers: { ...serviceHeaders(cfg.key), "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ commission_rate: input.commissionRate, status: input.status }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
