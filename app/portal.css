@@ -81,7 +81,7 @@
 .portal-details { margin-top: 16px; }
 .portal-details summary { color: #6f6a62; cursor: pointer; font-size: 13px; font-weight: 650; padding: 4px 0; }
 .portal-inline-form { align-items: center; display: inline-flex; gap: 8px; }
-.portal-select { background: #fffdf8; border: 1px solid #c9c3ba; border-radius: 7px; color: #302d29; font-size: 13px; padding: 8px 10px; text-transform: capitalize; }
+.portal-select { appearance: none; -webkit-appearance: none; background: #fffdf8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23302d29' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center; border: 1px solid #c9c3ba; border-radius: 7px; color: #302d29; font-size: 13px; padding: 8px 32px 8px 10px; text-transform: capitalize; }
 .portal-empty { color: #8b857d; font-size: 14px; padding: 26px 0; text-align: center; }
 
 /* Copy-to-clipboard on the referral banner */
@@ -94,7 +94,7 @@
 .portal-search { background: #fffdf8; border: 1px solid #c9c3ba; border-radius: 8px; color: #302d29; flex: 1 1 260px; font-size: 14px; outline: 0; padding: 10px 13px; }
 .portal-search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(18,58,72,.1); }
 .portal-sort { align-items: center; color: #77726a; display: inline-flex; font-size: 12px; font-weight: 650; gap: 8px; white-space: nowrap; }
-.portal-sort select { background: #fffdf8; border: 1px solid #c9c3ba; border-radius: 8px; color: #302d29; font-size: 13px; padding: 9px 11px; }
+.portal-sort select { appearance: none; -webkit-appearance: none; background: #fffdf8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23302d29' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 13px center; border: 1px solid #c9c3ba; border-radius: 8px; color: #302d29; font-size: 13px; padding: 9px 34px 9px 11px; }
 
 /* Add-partner + edit-partner forms */
 .portal-add { padding: 0; }
@@ -110,3 +110,14 @@
 .portal-success-inline { background: #e6ebde; border: 1px solid #b8c4ad; border-radius: 8px; color: #45513f; font-size: 13px; margin: 0; padding: 11px 14px; }
 .portal-check { align-items: center; color: #302d29; cursor: pointer; display: flex; flex-direction: row; font-size: 13px; font-weight: 500; gap: 9px; line-height: 1.4; }
 .portal-check input { accent-color: var(--orange); flex: 0 0 auto; height: 17px; width: 17px; }
+
+/* Breathing room between the add-partner card and the list toolbar below it */
+.portal-add + .portal-toolbar { margin-top: 24px; }
+
+/* Delete-partner (danger) */
+.portal-remove { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 16px; }
+.portal-btn--danger { background: #a5352a; color: #fff; }
+.portal-btn--danger:hover:not(:disabled) { background: #8f2c22; }
+.portal-danger-zone { background: #fdf3f1; border: 1px solid #e6c3bb; border-radius: 10px; display: flex; flex-direction: column; gap: 12px; margin-top: 8px; padding: 16px; }
+.portal-danger-note { color: #7a3327; font-size: 13px; line-height: 1.5; margin: 0; }
+.portal-danger-zone .portal-actions { margin-top: 2px; }
