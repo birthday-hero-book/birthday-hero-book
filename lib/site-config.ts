@@ -14,7 +14,7 @@ export const siteConfig = {
     {
       id: "standard",
       name: "Standard",
-      price: 49,
+      price: 29,
       description: "A beautiful, complete birthday adventure made for one child.",
       features: [
         "12-page personalised illustrated digital storybook",
@@ -27,7 +27,7 @@ export const siteConfig = {
     {
       id: "deluxe",
       name: "Deluxe",
-      price: 79,
+      price: 49,
       badge: "Most Popular",
       description: "The fuller birthday moment—with extras made for the big day.",
       features: [
@@ -41,7 +41,7 @@ export const siteConfig = {
     {
       id: "family",
       name: "Family Edition",
-      price: 119,
+      price: 79,
       description: "A shared adventure for siblings, twins or joint birthdays.",
       features: [
         "Two personalised books, or one story featuring two siblings",
