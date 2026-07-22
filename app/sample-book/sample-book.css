@@ -1,0 +1,206 @@
+/* The /sample-book page-turner. Dark reading surface so the artwork carries the
+   page, with the "this is our own sample" notice pinned above the book rather
+   than left to scroll away. */
+
+.samplebook {
+  --samplebook-surface: #0d1f2b;
+  background: var(--samplebook-surface);
+  color: var(--cream);
+  min-height: 100vh;
+  padding-bottom: 46px;
+}
+
+.samplebook-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px clamp(16px, 4vw, 34px);
+  border-bottom: 1px solid rgba(255, 250, 240, .12);
+}
+
+.samplebook-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--cream);
+  text-decoration: none;
+}
+
+.samplebook-brand span {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(237, 189, 84, .16);
+  color: var(--gold);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
+
+.samplebook-cta {
+  background: var(--orange);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.samplebook-cta:hover { filter: brightness(1.06); }
+
+.samplebook-notice {
+  margin: 0;
+  padding: 14px clamp(16px, 4vw, 34px);
+  background: rgba(237, 189, 84, .13);
+  border-bottom: 1px solid rgba(237, 189, 84, .3);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 250, 240, .9);
+}
+
+.samplebook-notice b { color: var(--gold); }
+
+.samplebook-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 20px);
+  padding: clamp(20px, 4vw, 38px) clamp(10px, 3vw, 28px) 12px;
+}
+
+.samplebook-arrow {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 250, 240, .28);
+  background: transparent;
+  color: var(--cream);
+  font-size: 18px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background .15s ease, opacity .15s ease;
+}
+
+.samplebook-arrow:hover:not(:disabled) { background: rgba(255, 250, 240, .12); }
+.samplebook-arrow:disabled { opacity: .22; cursor: default; }
+
+.samplebook-pages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.6vw, 16px);
+  min-width: 0;
+}
+
+.samplebook-page {
+  margin: 0;
+  flex: none;
+  width: min(420px, 88vw);
+}
+
+.samplebook-page img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .55);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.samplebook-peek {
+  flex: none;
+  width: min(132px, 17vw);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  opacity: .3;
+  transition: opacity .2s ease;
+}
+
+.samplebook-peek:hover { opacity: .55; }
+.samplebook-peek.is-empty { cursor: default; pointer-events: none; }
+
+.samplebook-peek img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 5px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.samplebook-counter {
+  margin: 0;
+  text-align: center;
+  font-size: 13.5px;
+  letter-spacing: .04em;
+  color: rgba(255, 250, 240, .62);
+}
+
+.samplebook-counter b { color: var(--gold); font-weight: 700; }
+
+.samplebook-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 14px clamp(16px, 4vw, 34px) 0;
+}
+
+.samplebook-dots button {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 250, 240, .25);
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+
+.samplebook-dots button:hover { background: rgba(255, 250, 240, .5); }
+.samplebook-dots button.is-current { background: var(--gold); transform: scale(1.3); }
+
+.samplebook-hint {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: .06em;
+  color: rgba(255, 250, 240, .42);
+}
+
+.samplebook-tail {
+  margin: clamp(28px, 5vw, 44px) auto 0;
+  max-width: 720px;
+  padding: 24px clamp(18px, 4vw, 30px);
+  background: rgba(0, 0, 0, .24);
+  border: 1px solid rgba(255, 250, 240, .1);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.samplebook-tail p {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(255, 250, 240, .7);
+}
+
+.samplebook-tail b { color: rgba(255, 250, 240, .95); }
+
+@media (max-width: 760px) {
+  .samplebook-peek { display: none; }
+  .samplebook-notice { font-size: 13px; text-align: left; }
+  .samplebook-hint { font-size: 11px; }
+}

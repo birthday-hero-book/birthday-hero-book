@@ -29,8 +29,3 @@ pnpm-debug.log*
 # TypeScript and certificates
 *.tsbuildinfo
 *.pem
-
-# Local-only example storybook — kept on disk (works at /storybook) but never committed
-/app/storybook/
-/components/StorybookReader.tsx
-/public/storybook/

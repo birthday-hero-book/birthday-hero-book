@@ -8,8 +8,13 @@ import { Announcement, Faqs, FinalCta, FoundingOffer, Pricing } from "./SharedSe
 import { PersonalisationDemo } from "./PersonalisationDemo";
 import { SiteFooter } from "./SiteFooter";
 import { siteConfig } from "@/lib/site-config";
+import { sampleBook, sampleBookPages } from "@/lib/sample-book";
 
 const names = ["Amelia", "Leo", "Maya", "Noah"];
+
+// A short taste of the real example book — cover plus three story pages. The
+// full fifteen are at /sample-book.
+const samplePeek = [0, 3, 6, 10].map((index) => sampleBookPages[index]);
 
 export default function VersionOne() {
   const [nameIndex, setNameIndex] = useState(0);
@@ -27,6 +32,7 @@ export default function VersionOne() {
         <nav aria-label="Main navigation">
           <a href="#how-it-works">How It Works</a>
           <a href="#adventures">Adventures</a>
+          <Link href="/sample-book">See a Sample</Link>
           <a href="#pricing">Pricing</a>
           <a href="#faqs">FAQs</a>
           <Link href="/partners">Partner sign in</Link>
@@ -153,6 +159,34 @@ export default function VersionOne() {
           <div className="sample-spread spread-a"><div /><p>Past the whispering palms, a gentle giant was waiting...</p><span>Illustrated spread</span></div>
           <div className="sample-spread spread-b"><p>“Make a wish,” said everyone Noah loved.</p><strong>Happy 7th Birthday,<br />our brilliant explorer.</strong><span>Personal message</span></div>
           <div className="sample-device"><div className="device-screen"><Image src="/illustrations/adventure-world.png" alt="Sample book displayed on a tablet" fill sizes="28vw" /></div><span>Print-ready PDF + device friendly</span></div>
+        </div>
+
+        <div className="real-sample">
+          <div className="real-sample-intro">
+            <span className="real-sample-badge">◆ Our own sample book</span>
+            <p>
+              These are real pages from <em>{sampleBook.title}</em>, a complete book we created ourselves so you
+              can see exactly what you’ll receive. Maya isn’t a customer — we never publish a real child’s
+              book, name, photo or details.
+            </p>
+          </div>
+          <div className="real-sample-row">
+            {samplePeek.map((page) => (
+              <Image
+                key={page.src}
+                className="real-sample-page"
+                src={page.src}
+                alt={page.alt}
+                width={sampleBook.pageWidth}
+                height={sampleBook.pageHeight}
+                sizes="150px"
+              />
+            ))}
+            <Link className="real-sample-more" href="/sample-book">
+              <b>{sampleBookPages.length}</b>
+              <span>Read the whole book →</span>
+            </Link>
+          </div>
         </div>
       </section>
 

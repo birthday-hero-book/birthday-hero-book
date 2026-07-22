@@ -123,3 +123,14 @@
 .portal-danger-zone { background: #fdf3f1; border: 1px solid #e6c3bb; border-radius: 10px; display: flex; flex-direction: column; gap: 12px; margin-top: 8px; padding: 16px; }
 .portal-danger-note { color: #7a3327; font-size: 13px; line-height: 1.5; margin: 0; }
 .portal-danger-zone .portal-actions { margin-top: 2px; }
+
+/* The shareable sample-book card on the partner dashboard. */
+.portal-sample { align-items: start; display: grid; gap: 22px; grid-template-columns: 120px 1fr; }
+.portal-sample-cover { border-radius: 6px; box-shadow: 0 10px 26px rgba(23,23,20,.22); height: auto; width: 120px; }
+.portal-sample-copy > h2 { margin-bottom: 10px; }
+.portal-sample .portal-note { margin: 0 0 16px; }
+.portal-sample .portal-note em { font-style: italic; }
+@media (max-width: 620px) {
+  .portal-sample { grid-template-columns: 1fr; }
+  .portal-sample-cover { width: 96px; }
+}
