@@ -17,10 +17,10 @@ export const siteConfig = {
       price: 29,
       description: "A beautiful, complete birthday adventure made for one child.",
       features: [
-        "12-page personalised illustrated digital storybook",
+        "12-page personalised illustrated storybook",
         "Child’s name, age, appearance and interests included",
         "Choice of three adventure themes",
-        "Printable high-resolution PDF",
+        "Your own high-resolution PDF to download, keep and print",
         "Delivered within five working days",
       ],
     },
