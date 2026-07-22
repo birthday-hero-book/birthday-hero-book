@@ -6,9 +6,9 @@ export const siteConfig = {
   foundingDeadlineISO: "2026-07-21T22:59:59Z",
   deliveryTime: "within five working days",
   checkoutUrls: {
-    standardCheckoutUrl: "https://buy.stripe.com/4gMdR9a5p74ngeJ5eKfYY02",
-    deluxeCheckoutUrl: "https://buy.stripe.com/bJe5kDfpJ9cv3rX7mSfYY00",
-    familyCheckoutUrl: "https://buy.stripe.com/cNi5kD1yTcoHfaF22yfYY01",
+    standardCheckoutUrl: "https://buy.stripe.com/cNieVd2CXcoH0fL4aGfYY03",
+    deluxeCheckoutUrl: "https://buy.stripe.com/9B67sLelF88r9Ql8qWfYY04",
+    familyCheckoutUrl: "https://buy.stripe.com/fZu9AT7Xh60jd2xgXsfYY05",
   },
   packages: [
     {
