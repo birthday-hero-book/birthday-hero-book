@@ -20,27 +20,6 @@
   border-bottom: 1px solid rgba(255, 250, 240, .12);
 }
 
-.samplebook-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--serif);
-  font-size: 17px;
-  color: var(--cream);
-  text-decoration: none;
-}
-
-.samplebook-brand span {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: rgba(237, 189, 84, .16);
-  color: var(--gold);
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-}
-
 .samplebook-cta {
   background: var(--orange);
   color: #fff;

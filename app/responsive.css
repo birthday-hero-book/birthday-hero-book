@@ -2,7 +2,11 @@
 .legal-notice p { color: #5f6a59; font-size: 14px; }
 
 @media (max-width: 1050px) {
-  .nav-shell nav { display: none; }
+  .nav-shell > nav { display: none; }
+  .mobile-nav-toggle { display: flex; }
+  .mobile-nav-panel:not([hidden]) { display: block; }
+  .nav-shell .nav-cta { margin-left: auto; }
+  .nav-shell { gap: 10px; }
   .v1-hero { grid-template-columns: 1fr 480px; }
   .v1-hero h1 { font-size: clamp(51px, 6.5vw, 74px); }
   .v1-intro { grid-template-columns: 1fr 3fr; }
@@ -24,7 +28,9 @@
   .v1-demo-section { border-radius: 18px; margin: 0 9px; padding: 48px 16px; }.demo { display: flex; flex-direction: column; }.demo-controls { width: 100%; }.demo-book { margin-top: 25px; width: 100%; }.demo-book-copy strong { font-size: clamp(22px, 6vw, 37px); }
   .v1-how, .v1-adventures, .pricing, .faqs, .v2-demo-section, .v2-how, .v2-adventures, .v2-benefits { padding: 90px 20px; }.section-heading h2, .v2-section-title h2 { font-size: 42px; }.steps-editorial { margin-top: 45px; }.steps-editorial article { gap: 20px; grid-template-columns: 92px 1fr; min-height: 170px; }.step-art { height: 100px; }.step-art::after { height: 62px; width: 62px; }.step-art span { font-size: 20px; }.steps-editorial article > div:last-child { display: block; }.step-number { display: block; margin-bottom: 8px; }.steps-editorial h3 { font-size: 23px; }.steps-editorial p { font-size: 11px; margin-top: 10px; }
   .adventure-heading { align-items: start; display: block; }.adventure-grid, .playbill-grid, .price-grid { grid-template-columns: 1fr; }.adventure-card { max-width: 560px; }.adventure-copy p { min-height: 0; }.playbill { margin: 0 auto; max-width: 540px; width: 100%; }.playbill-copy p { min-height: 0; }.price-grid { gap: 20px; }.price-card { min-height: auto; }.price-card.featured { transform: none; }.price-head p { min-height: 0; }.price-card ul { min-height: 0; }
-  .book-experience { padding: 90px 20px 50px; }.spread-stack { min-height: 600px; transform: scale(.88); transform-origin: top center; }.sample-cover { left: 0; }.sample-spread { right: -10%; }.sample-device { left: -5%; }
+  /* transform: scale() shrinks the artwork visually but still reserves its full
+     unscaled height, leaving dead space underneath — pull that phantom back. */
+  .book-experience { min-height: 0; padding: 90px 20px 50px; }.spread-stack { margin-bottom: calc(600px * -.12); min-height: 600px; transform: scale(.88); transform-origin: top center; }.sample-cover { left: 0; }.sample-spread { right: -10%; }.sample-device { left: -5%; }
   .v1-benefits { display: block; padding: 90px 20px; }.benefit-lead { position: static; }.benefit-list { margin-top: 50px; }.benefit-lead h2 { font-size: 44px; }
   .founding { display: flex; flex-direction: column; margin: 70px 12px 90px; padding: 55px 25px; }.founding-art { max-width: 430px; width: 100%; }.founding-copy h2 { font-size: 42px; }
   .faqs { display: block; }.faq-list { margin-top: 45px; }.faq-list summary { font-size: 14px; }
@@ -47,7 +53,7 @@
   .value-strip strong { font-size: 12px; }.value-strip small { font-size: 12px; }.statement { font-size: 34px; }
   .demo-grid { grid-template-columns: 1fr; }.demo-grid label, .demo-grid fieldset, .full-field { grid-column: 1; }.theme-pills label { flex: 1; justify-content: center; min-width: 30%; padding: 9px 4px; }
   .steps-editorial article { grid-template-columns: 76px 1fr; }.step-art { height: 82px; }.step-art::after { height: 50px; width: 50px; }.steps-editorial h3 { font-size: 20px; }
-  .book-experience { min-height: 920px; }.spread-stack { height: 760px; left: 50%; margin-left: -380px; min-height: 0; transform: scale(.64); width: 760px; }.sample-cover { left: 14%; }.spread-a { right: 12%; }.spread-b { bottom: 10%; right: 18%; }.sample-device { bottom: 4%; left: 20%; }
+  .book-experience { min-height: 0; }.spread-stack { height: 760px; left: 50%; margin-bottom: calc(760px * -.36); margin-left: -380px; min-height: 0; transform: scale(.64); width: 760px; }.sample-cover { left: 14%; }.spread-a { right: 12%; }.spread-b { bottom: 10%; right: 18%; }.sample-device { bottom: 4%; left: 20%; }
   .benefit-list article { grid-template-columns: 28px 1fr; }.benefit-list article > i { display: none; }
   .price-card { padding: 25px 22px; }.price { font-size: 53px; }.founding { border-radius: 10px; }.faqs { gap: 0; }.faq-list details p { margin-right: 10px; }
   .footer-top { gap: 45px; }.footer-bottom { align-items: start; flex-direction: column; gap: 8px; }
