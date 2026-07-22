@@ -4,7 +4,7 @@ import { useState } from "react";
 
 // The referral-link banner with a copy-to-clipboard button. Client component so
 // it can use the Clipboard API and show feedback.
-export function ReferralLinkBox({ link }: { link: string }) {
+export function ReferralLinkBox({ link, label = "Your referral link" }: { link: string; label?: string }) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -21,7 +21,7 @@ export function ReferralLinkBox({ link }: { link: string }) {
 
   return (
     <div className="portal-linkbox">
-      <span>Your referral link</span>
+      <span>{label}</span>
       <div className="portal-linkbox-right">
         <code>{link}</code>
         <button type="button" className="portal-copy-btn" onClick={copy} aria-live="polite">

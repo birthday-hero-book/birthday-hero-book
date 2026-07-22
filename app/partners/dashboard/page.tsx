@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Brand } from "@/components/Brand";
@@ -12,6 +13,7 @@ import {
   linkAuthUser,
 } from "@/lib/affiliate-data";
 import { getRequestOrigin } from "@/lib/request-origin";
+import { sampleBook, sampleBookPages } from "@/lib/sample-book";
 import { siteConfig } from "@/lib/site-config";
 import { signOut } from "../actions";
 import "../../portal.css";
@@ -74,6 +76,9 @@ export default async function PartnerDashboardPage() {
   const stats = await getAffiliateStats(affiliate.id);
   const origin = await getRequestOrigin();
   const referralLink = `${origin}/r/${affiliate.code}`;
+  // Routed through /r/<code> rather than linking straight to /sample-book so the
+  // click is logged and attribution is set exactly as it is for the main link.
+  const sampleBookLink = `${referralLink}?to=/sample-book`;
   const ratePct = Math.round(Number(affiliate.commission_rate) * 100);
 
   return (
@@ -110,6 +115,26 @@ export default async function PartnerDashboardPage() {
             <span>Commission paid</span>
             <b>{GBP.format(stats.commission.paid)}</b>
             <small>Already paid out to you</small>
+          </div>
+        </div>
+
+        <div className="portal-card portal-sample">
+          <Image
+            className="portal-sample-cover"
+            src={sampleBookPages[0].src}
+            alt={sampleBookPages[0].alt}
+            width={sampleBook.pageWidth}
+            height={sampleBook.pageHeight}
+            sizes="120px"
+          />
+          <div className="portal-sample-copy">
+            <h2>Share the sample book</h2>
+            <p className="portal-note">
+              <em>{sampleBook.title}</em> is a complete example book your audience can read in full, free and
+              with no sign-up. The link below goes to it through your referral code, so clicks and commission
+              are tracked exactly as they are for your main link.
+            </p>
+            <ReferralLinkBox link={sampleBookLink} label="Your sample book link" />
           </div>
         </div>
 
