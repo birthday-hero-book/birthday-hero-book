@@ -2,8 +2,8 @@ export const siteConfig = {
   name: "Birthday Hero Book",
   domain: "birthdayherobook.com",
   contactEmail: "hello@birthdayherobook.com",
-  foundingDeadline: "21 July at midnight",
-  foundingDeadlineISO: "2026-07-21T22:59:59Z",
+  foundingDeadline: "30 July at midnight",
+  foundingDeadlineISO: "2026-07-30T22:59:59Z",
   deliveryTime: "within five working days",
   checkoutUrls: {
     standardCheckoutUrl: "https://buy.stripe.com/cNieVd2CXcoH0fL4aGfYY03",
