@@ -42,11 +42,11 @@ export const siteConfig = {
       id: "family",
       name: "Family Edition",
       price: 79,
-      description: "A shared adventure for siblings, twins or joint birthdays.",
+      description: "A shared adventure for siblings or joint birthdays.",
       features: [
         "Two personalised books, or one story featuring two siblings",
         "All Deluxe bonuses",
-        "Made for siblings, twins or joint birthdays",
+        "Made for siblings or joint birthdays",
         "Printable high-resolution PDF",
         "Delivered within five working days",
       ],
