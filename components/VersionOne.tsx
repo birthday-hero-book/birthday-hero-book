@@ -4,17 +4,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Brand } from "./Brand";
+import { MobileNav, type NavItem } from "./MobileNav";
 import { Announcement, Faqs, FinalCta, FoundingOffer, Pricing } from "./SharedSections";
 import { PersonalisationDemo } from "./PersonalisationDemo";
 import { SiteFooter } from "./SiteFooter";
 import { siteConfig } from "@/lib/site-config";
-import { sampleBook, sampleBookPages } from "@/lib/sample-book";
 
 const names = ["Amelia", "Leo", "Maya", "Noah"];
 
-// A short taste of the real example book — cover plus three story pages. The
-// full fifteen are at /sample-book.
-const samplePeek = [0, 3, 6, 10].map((index) => sampleBookPages[index]);
+// Shared by the desktop nav and the hamburger below 1050px so the two can't drift.
+const navItems: NavItem[] = [
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "Adventures", href: "#adventures" },
+  { label: "See a Sample", href: "/sample-book" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "FAQs", href: "#faqs" },
+  { label: "Partner sign in", href: "/partners" },
+];
 
 export default function VersionOne() {
   const [nameIndex, setNameIndex] = useState(0);
@@ -30,14 +36,16 @@ export default function VersionOne() {
       <header className="nav-shell v1-nav">
         <Brand />
         <nav aria-label="Main navigation">
-          <a href="#how-it-works">How It Works</a>
-          <a href="#adventures">Adventures</a>
-          <Link href="/sample-book">See a Sample</Link>
-          <a href="#pricing">Pricing</a>
-          <a href="#faqs">FAQs</a>
-          <Link href="/partners">Partner sign in</Link>
+          {navItems.map((item) =>
+            item.href.startsWith("#") ? (
+              <a key={item.href} href={item.href}>{item.label}</a>
+            ) : (
+              <Link key={item.href} href={item.href}>{item.label}</Link>
+            ),
+          )}
         </nav>
         <Link className="nav-cta" href="#pricing">Create Their Book</Link>
+        <MobileNav items={navItems} />
       </header>
 
       <section className="v1-hero">
@@ -153,40 +161,13 @@ export default function VersionOne() {
           <div className="section-kicker">Inside their book</div>
           <h2>Made to be opened. Then opened again.</h2>
           <p>A print-ready story designed with the pacing, detail and wonder of a real picture book—not a novelty with their name dropped in.</p>
+          <Link className="button button-light book-experience-cta" href="/sample-book">See a Sample</Link>
         </div>
         <div className="spread-stack">
           <div className="sample-cover"><Image src="/illustrations/adventure-world.png" alt="Sample personalised book cover" fill sizes="36vw" /><strong>NOAH’S<br />BIRTHDAY<br />QUEST</strong><span>Front cover</span></div>
           <div className="sample-spread spread-a"><div /><p>Past the whispering palms, a gentle giant was waiting...</p><span>Illustrated spread</span></div>
           <div className="sample-spread spread-b"><p>“Make a wish,” said everyone Noah loved.</p><strong>Happy 7th Birthday,<br />our brilliant explorer.</strong><span>Personal message</span></div>
           <div className="sample-device"><div className="device-screen"><Image src="/illustrations/adventure-world.png" alt="Sample book displayed on a tablet" fill sizes="28vw" /></div><span>Print-ready PDF + device friendly</span></div>
-        </div>
-
-        <div className="real-sample">
-          <div className="real-sample-intro">
-            <span className="real-sample-badge">◆ Our own sample book</span>
-            <p>
-              These are real pages from <em>{sampleBook.title}</em>, a complete book we created ourselves so you
-              can see exactly what you’ll receive. Maya isn’t a customer — we never publish a real child’s
-              book, name, photo or details.
-            </p>
-          </div>
-          <div className="real-sample-row">
-            {samplePeek.map((page) => (
-              <Image
-                key={page.src}
-                className="real-sample-page"
-                src={page.src}
-                alt={page.alt}
-                width={sampleBook.pageWidth}
-                height={sampleBook.pageHeight}
-                sizes="150px"
-              />
-            ))}
-            <Link className="real-sample-more" href="/sample-book">
-              <b>{sampleBookPages.length}</b>
-              <span>Read the whole book →</span>
-            </Link>
-          </div>
         </div>
       </section>
 

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Brand } from "./Brand";
 import { sampleBook, sampleBookPages } from "@/lib/sample-book";
 
 // Page-turner for the example book at /sample-book. One page is shown large
@@ -49,15 +50,13 @@ export function SampleBookReader({ fromPrice }: { fromPrice: number }) {
   return (
     <main className="samplebook">
       <header className="samplebook-bar">
-        <Link className="samplebook-brand" href="/" aria-label="Birthday Hero Book home">
-          <span aria-hidden="true">✦</span><b>Birthday Hero Book</b>
-        </Link>
+        <Brand inverse />
         <Link className="samplebook-cta" href="/#pricing">Create their book — from £{fromPrice}</Link>
       </header>
 
       <p className="samplebook-notice">
         <b>This is our own sample book.</b> We created Maya, her story and her dedication ourselves to show
-        exactly what you’ll receive. We never publish a real child’s book, name, photo or details.
+        an example of what you’d receive. We never publish a real child’s book, name, photo or details.
       </p>
 
       <div className="samplebook-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
