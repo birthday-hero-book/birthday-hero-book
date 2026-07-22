@@ -59,7 +59,7 @@ export function Faqs({ variant }: { variant: "one" | "two" }) {
 export function Announcement({ variant }: { variant: "one" | "two" }) {
   return (
     <div className={`announcement announcement--${variant}`}>
-      <p><span>Founding release</span> Personalised birthday books from £49 <i aria-hidden="true">·</i> founding prices end {siteConfig.foundingDeadline}</p>
+      <p><span>Founding release</span> Personalised birthday books from £29 <i aria-hidden="true">·</i> founding prices end {siteConfig.foundingDeadline}</p>
       <a href="#pricing">See the offer <span aria-hidden="true">→</span></a>
     </div>
   );

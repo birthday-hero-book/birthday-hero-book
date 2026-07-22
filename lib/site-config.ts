@@ -2,19 +2,19 @@ export const siteConfig = {
   name: "Birthday Hero Book",
   domain: "birthdayherobook.com",
   contactEmail: "hello@birthdayherobook.com",
-  foundingDeadline: "21 July at midnight",
-  foundingDeadlineISO: "2026-07-21T22:59:59Z",
+  foundingDeadline: "30 July at midnight",
+  foundingDeadlineISO: "2026-07-30T22:59:59Z",
   deliveryTime: "within five working days",
   checkoutUrls: {
-    standardCheckoutUrl: "https://buy.stripe.com/4gMdR9a5p74ngeJ5eKfYY02",
-    deluxeCheckoutUrl: "https://buy.stripe.com/bJe5kDfpJ9cv3rX7mSfYY00",
-    familyCheckoutUrl: "https://buy.stripe.com/cNi5kD1yTcoHfaF22yfYY01",
+    standardCheckoutUrl: "https://buy.stripe.com/cNieVd2CXcoH0fL4aGfYY03",
+    deluxeCheckoutUrl: "https://buy.stripe.com/9B67sLelF88r9Ql8qWfYY04",
+    familyCheckoutUrl: "https://buy.stripe.com/fZu9AT7Xh60jd2xgXsfYY05",
   },
   packages: [
     {
       id: "standard",
       name: "Standard",
-      price: 49,
+      price: 29,
       description: "A beautiful, complete birthday adventure made for one child.",
       features: [
         "12-page personalised illustrated digital storybook",
@@ -27,7 +27,7 @@ export const siteConfig = {
     {
       id: "deluxe",
       name: "Deluxe",
-      price: 79,
+      price: 49,
       badge: "Most Popular",
       description: "The fuller birthday moment—with extras made for the big day.",
       features: [
@@ -41,7 +41,7 @@ export const siteConfig = {
     {
       id: "family",
       name: "Family Edition",
-      price: 119,
+      price: 79,
       description: "A shared adventure for siblings, twins or joint birthdays.",
       features: [
         "Two personalised books, or one story featuring two siblings",
