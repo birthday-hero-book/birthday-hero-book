@@ -10,7 +10,9 @@
   .v1-hero { grid-template-columns: 1fr 480px; }
   .v1-hero h1 { font-size: clamp(51px, 6.5vw, 74px); }
   .v1-intro { grid-template-columns: 1fr 3fr; }
-  .book-experience { grid-template-columns: 1fr; }.book-experience-copy { max-width: 700px; }.spread-stack { margin: 0 auto; max-width: 800px; width: 100%; }
+  /* minmax(0,1fr) so the oversized, deliberately-overflowing artwork can't set a
+     min-content floor on the column and drag the copy and CTA past the edge. */
+  .book-experience { grid-template-columns: minmax(0, 1fr); }.book-experience-copy { max-width: 700px; }.spread-stack { margin: 0 auto; max-width: 800px; width: 100%; }
   .v2-hero { grid-template-columns: .9fr 1.1fr; }.admit-ticket { display: none; }
   .show-book.cover { left: 0; }.show-tablet { right: -4%; }
   .form-layout { grid-template-columns: 1fr 300px; }
