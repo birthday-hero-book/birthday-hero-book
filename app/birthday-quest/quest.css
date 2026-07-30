@@ -1,0 +1,327 @@
+/* Birthday Quest — self-contained. Every selector is q-/quest- prefixed so
+   nothing here can leak into the marketing pages' globals. */
+
+.quest {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #05070f;
+  font-family: var(--sans, ui-sans-serif, system-ui, sans-serif);
+  color: #fff;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.quest-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------------------------------------------------------------- tiles */
+.q-tile {
+  fill: transparent;
+  cursor: default;
+  transition: fill 0.22s ease;
+  outline: none;
+}
+.q-tile--live {
+  cursor: pointer;
+  fill: rgba(255, 255, 255, 0);
+}
+.q-tile--live:hover,
+.q-tile--live:focus-visible {
+  fill: rgba(255, 255, 255, 0.17);
+}
+
+.q-crank {
+  cursor: pointer;
+  outline: none;
+}
+.q-crank:hover g,
+.q-crank:focus-visible g {
+  filter: brightness(1.25);
+}
+
+/* ---------------------------------------------------------------- hero */
+.q-hero {
+  transition: none;
+  pointer-events: none;
+}
+.q-hero-bob {
+  animation: q-breathe 3.4s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+.q-hero-bob--walk {
+  animation: q-step 0.3s ease-in-out infinite;
+}
+@keyframes q-breathe {
+  0%, 100% { transform: translateY(0) scaleX(var(--f, 1)); }
+  50% { transform: translateY(-1.5px); }
+}
+@keyframes q-step {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ---------------------------------------------------------- atmosphere */
+.q-twinkle { animation: q-tw 4.5s ease-in-out infinite; }
+@keyframes q-tw {
+  0%, 100% { opacity: 0.22; }
+  50% { opacity: 0.95; }
+}
+
+.q-mote { animation: q-drift 13s ease-in-out infinite; }
+@keyframes q-drift {
+  0%, 100% { transform: translate(0, 0); opacity: 0.15; }
+  50% { transform: translate(14px, -26px); opacity: 0.72; }
+}
+
+.q-flame { animation: q-flick 1.5s ease-in-out infinite; transform-origin: center bottom; }
+.q-flame--out { opacity: 0.18; animation: none; }
+@keyframes q-flick {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.14, 0.92) translateY(-1.5px); }
+}
+
+.q-glow { animation: q-pulse-soft 3.6s ease-in-out infinite; }
+@keyframes q-pulse-soft {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.32; }
+}
+
+.q-pulse { animation: q-ring 2.6s ease-out infinite; transform-origin: center; }
+@keyframes q-ring {
+  0% { opacity: 0.32; }
+  70% { opacity: 0.05; }
+  100% { opacity: 0.32; }
+}
+
+.q-flicker { animation: q-flick 2.2s ease-in-out infinite; }
+
+.quest-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 231, 170, 0.85), transparent 62%);
+  animation: q-flash 0.9s ease-out forwards;
+}
+@keyframes q-flash {
+  0% { opacity: 0; }
+  22% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ---------------------------------------------------------------- HUD */
+.quest-hud {
+  position: absolute;
+  inset: 0;
+  padding: clamp(16px, 3.2vw, 34px);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-content: start;
+  gap: 12px;
+  pointer-events: none;
+}
+.quest-hud > * { pointer-events: auto; }
+
+.quest-chapter {
+  font-size: 10px;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+.quest-hud-left h2 {
+  font-family: var(--serif, Georgia, serif);
+  font-size: clamp(21px, 3.4vw, 33px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 5px 0 4px;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.55);
+}
+.quest-hud-left p {
+  font-size: clamp(12px, 1.5vw, 14px);
+  margin: 0;
+  max-width: 46ch;
+  opacity: 0.78;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.6);
+}
+
+.quest-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.quest-pips { display: flex; gap: 7px; }
+.quest-pips span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.quest-pips span.on {
+  background: #ffd98a;
+  border-color: #ffd98a;
+  box-shadow: 0 0 13px #ffd98a;
+}
+
+/* Pinned to the bottom of the screen rather than the grid — the HUD packs its
+   rows to the top, so align-self:end inside it would have done nothing. */
+.quest-hint {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(16px, 3vw, 28px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(90vw, 52ch);
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.62;
+  text-align: center;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7);
+}
+
+.quest-ghost {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 17px;
+  transition: background 0.2s ease;
+}
+.quest-ghost:hover { background: rgba(255, 255, 255, 0.19); }
+.quest-ghost--wide { display: block; margin: 12px auto 0; }
+
+/* ------------------------------------------------------------ overlays */
+.quest-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(6, 8, 18, 0.62);
+  backdrop-filter: blur(9px);
+  animation: q-fade 0.6s ease both;
+}
+@keyframes q-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.quest-card {
+  background: rgba(18, 17, 28, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+  max-width: 470px;
+  padding: clamp(26px, 4.4vw, 42px);
+  text-align: center;
+  animation: q-rise 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes q-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+.quest-kicker {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffd98a;
+}
+.quest-card h1 {
+  font-family: var(--serif, Georgia, serif);
+  font-size: clamp(31px, 6vw, 47px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.03;
+  margin: 12px 0 15px;
+}
+.quest-card p {
+  font-size: 14px;
+  line-height: 1.62;
+  margin: 0 0 15px;
+  opacity: 0.82;
+}
+.quest-sell {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding-top: 15px;
+  opacity: 0.72 !important;
+  font-size: 13px !important;
+}
+
+.quest-field { display: block; text-align: left; margin: 20px 0 16px; }
+.quest-field span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  margin-bottom: 7px;
+  opacity: 0.7;
+}
+.quest-field input {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9px;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  padding: 12px 14px;
+  width: 100%;
+}
+.quest-field input:focus {
+  border-color: #ffd98a;
+  box-shadow: 0 0 0 3px rgba(255, 217, 138, 0.2);
+  outline: none;
+}
+.quest-field input::placeholder { color: rgba(255, 255, 255, 0.34); }
+
+.quest-primary {
+  background: #ffd98a;
+  border: 0;
+  border-radius: 999px;
+  color: #2a1c07;
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  padding: 14px 26px;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  width: 100%;
+}
+.quest-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(255, 217, 138, 0.28);
+}
+.quest-card small {
+  display: block;
+  font-size: 10px;
+  margin-top: 13px;
+  opacity: 0.48;
+}
+
+/* --------------------------------------------------------------- phone */
+@media (max-width: 720px) {
+  /* Keep Reset in the top-right corner rather than dropping it under the
+     title, which wasted a whole row of a small screen. */
+  .quest-hud { gap: 8px; }
+  .quest-hud-left p { display: none; }
+  .quest-hud-left h2 { font-size: 21px; margin: 3px 0 0; }
+  .quest-hud-right { align-items: flex-start; gap: 10px; }
+  .quest-hint { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .q-twinkle, .q-mote, .q-flame, .q-glow, .q-pulse, .q-flicker,
+  .q-hero-bob, .q-hero-bob--walk, .quest-flash {
+    animation: none !important;
+  }
+}
