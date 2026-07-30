@@ -32,7 +32,7 @@ export function Pricing({ variant }: { variant: "one" | "two" }) {
           </article>
         )})}
       </div>
-      <p className="payment-note">Secure checkout via Stripe when live · No subscription · All prices include the complete digital product</p>
+      <p className="payment-note">Secure checkout via Stripe · No subscription · All prices include the complete digital product</p>
     </section>
   );
 }
