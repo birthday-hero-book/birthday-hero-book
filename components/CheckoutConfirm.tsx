@@ -24,6 +24,7 @@ export function CheckoutConfirm({
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLAnchorElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const primaryRef = useRef<HTMLAnchorElement>(null);
   const titleId = useId();
 
   const close = useCallback(() => {
@@ -38,7 +39,10 @@ export function CheckoutConfirm({
     const focusable = () =>
       Array.from(sheet?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []);
 
-    focusable()[0]?.focus();
+    // Focus the primary action explicitly: "Back" comes first in the DOM so that
+    // tab order matches the visual order, but the forward path should be first
+    // for the keyboard.
+    (primaryRef.current ?? focusable()[0])?.focus();
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -129,8 +133,8 @@ export function CheckoutConfirm({
             </ol>
 
             <div className="confirm-actions">
-              <a className="button button-primary" href={href}>Continue to Stripe <span aria-hidden="true">→</span></a>
               <button type="button" className="button button-quiet" onClick={close}>Back</button>
+              <a ref={primaryRef} className="button button-primary" href={href}>Continue to Stripe <span aria-hidden="true">→</span></a>
             </div>
             <p className="confirm-fine">Have their details to hand — the next step takes about 3 minutes.</p>
           </div>
