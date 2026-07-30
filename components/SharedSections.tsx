@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CheckIcon } from "./Brand";
 import { CheckoutConfirm } from "./CheckoutConfirm";
+import { isFoundingOfferOpen } from "@/lib/founding";
 import { faqs, siteConfig } from "@/lib/site-config";
 
 export function Pricing({ variant }: { variant: "one" | "two" }) {
@@ -61,15 +62,25 @@ export function Faqs({ variant }: { variant: "one" | "two" }) {
 }
 
 export function Announcement({ variant }: { variant: "one" | "two" }) {
+  const foundingOpen = isFoundingOfferOpen();
+  const fromPrice = Math.min(...siteConfig.packages.map((item) => item.price));
   return (
     <div className={`announcement announcement--${variant}`}>
-      <p><span>Founding release</span> Personalised birthday books from £29 <i aria-hidden="true">·</i> founding prices end {siteConfig.foundingDeadline}</p>
-      <a href="#pricing">See the offer <span aria-hidden="true">→</span></a>
+      {foundingOpen ? (
+        <p><span>Founding release</span> Personalised birthday books from £{fromPrice} <i aria-hidden="true">·</i> founding prices end {siteConfig.foundingDeadline}</p>
+      ) : (
+        <p><span>Now available</span> Personalised birthday books from £{fromPrice}</p>
+      )}
+      <a href="#pricing">{foundingOpen ? "See the offer" : "See the books"} <span aria-hidden="true">→</span></a>
     </div>
   );
 }
 
 export function FoundingOffer({ variant }: { variant: "one" | "two" }) {
+  // The whole section is the time-limited offer — the free invitation set and
+  // the deadline. Once it closes there is nothing here left to honour, so the
+  // section retires rather than advertising an extra that no longer applies.
+  if (!isFoundingOfferOpen()) return null;
   return (
     <section className={`founding founding--${variant}`}>
       <div className="founding-art" aria-hidden="true">

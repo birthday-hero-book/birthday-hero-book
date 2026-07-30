@@ -2,6 +2,10 @@ export const siteConfig = {
   name: "Birthday Hero Book",
   domain: "birthdayherobook.com",
   contactEmail: "hello@birthdayherobook.com",
+  // These two must stay in sync: the first is what buyers read, the second is
+  // what lib/founding.ts actually enforces. Change one without the other and
+  // the site advertises a date it does not honour. The ISO value is UTC —
+  // 22:59:59Z is midnight British Summer Time.
   foundingDeadline: "30 July at midnight",
   foundingDeadlineISO: "2026-07-30T22:59:59Z",
   deliveryTime: "within five working days",
