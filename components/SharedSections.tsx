@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CheckIcon } from "./Brand";
+import { CheckoutConfirm } from "./CheckoutConfirm";
 import { faqs, siteConfig } from "@/lib/site-config";
 
 export function Pricing({ variant }: { variant: "one" | "two" }) {
@@ -26,9 +27,12 @@ export function Pricing({ variant }: { variant: "one" | "two" }) {
             <ul>
               {item.features.map((feature) => <li key={feature}><CheckIcon /> {feature}</li>)}
             </ul>
-            <Link className={`button ${badge ? "button-primary" : "button-outline"}`} href={siteConfig.checkoutUrls[checkoutKey(item.id)]}>
-              Choose {item.name}
-            </Link>
+            <CheckoutConfirm
+              packageName={item.name}
+              price={item.price}
+              href={siteConfig.checkoutUrls[checkoutKey(item.id)]}
+              className={`button ${badge ? "button-primary" : "button-outline"}`}
+            />
           </article>
         )})}
       </div>

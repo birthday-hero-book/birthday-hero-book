@@ -59,7 +59,7 @@ function PersonalisePageContent() {
     return (
       <main className="form-page package-choice-page">
         <header className="form-nav"><Brand /><div><span>Order details</span><b>Choose an edition to continue</b></div></header>
-        <div className="form-progress"><span className="active">1 <i>Choose</i></span><b /><span>2 <i>Personalise</i></span><b /><span>3 <i>All done</i></span></div>
+        <div className="form-progress"><span className="active">1 <i>Choose &amp; pay</i></span><b /><span>2 <i>Personalise</i></span><b /><span>3 <i>All done</i></span></div>
         <Pricing variant="one" />
       </main>
     );
@@ -85,10 +85,16 @@ function PersonalisePageContent() {
   return (
     <main className="form-page">
       <header className="form-nav"><Brand /><div><span>Order details</span><b>Secure personalisation form</b></div></header>
-      <div className="form-progress"><span className="done">1 <i>Choose</i></span><b /><span className="active">2 <i>Personalise</i></span><b /><span>3 <i>All done</i></span></div>
+      <div className="form-progress"><span className="done">1 <i>Choose &amp; pay</i></span><b /><span className="active">2 <i>Personalise</i></span><b /><span>3 <i>All done</i></span></div>
       <section className="form-layout">
         <div className="form-main">
           <div className="form-heading">
+            {/* Only a real Stripe return proves payment — the demo route reaches this form without one. */}
+            {!isDemo && stripeSessionId && (
+              <p className="payment-received">
+                <span aria-hidden="true">✓</span> Payment received — {selectedPackage.name}, £{selectedPackage.price}
+              </p>
+            )}
             <span className="section-kicker">Now for the lovely details</span>
             <h1>Tell us about their world.</h1>
             <p>First names and broad details are all we need. A photograph is completely optional.</p>
