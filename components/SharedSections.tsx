@@ -62,16 +62,15 @@ export function Faqs({ variant }: { variant: "one" | "two" }) {
 }
 
 export function Announcement({ variant }: { variant: "one" | "two" }) {
-  const foundingOpen = isFoundingOfferOpen();
+  // The bar exists to carry the founding deadline. Once that passes there is no
+  // announcement left to make, so it goes entirely rather than restating a price
+  // the pricing section already covers.
+  if (!isFoundingOfferOpen()) return null;
   const fromPrice = Math.min(...siteConfig.packages.map((item) => item.price));
   return (
     <div className={`announcement announcement--${variant}`}>
-      {foundingOpen ? (
-        <p><span>Founding release</span> Personalised birthday books from £{fromPrice} <i aria-hidden="true">·</i> founding prices end {siteConfig.foundingDeadline}</p>
-      ) : (
-        <p><span>Now available</span> Personalised birthday books from £{fromPrice}</p>
-      )}
-      <a href="#pricing">{foundingOpen ? "See the offer" : "See the books"} <span aria-hidden="true">→</span></a>
+      <p><span>Founding release</span> Personalised birthday books from £{fromPrice} <i aria-hidden="true">·</i> founding prices end {siteConfig.foundingDeadline}</p>
+      <a href="#pricing">See the offer <span aria-hidden="true">→</span></a>
     </div>
   );
 }
