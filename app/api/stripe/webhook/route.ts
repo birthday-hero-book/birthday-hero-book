@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { siteConfig } from "@/lib/site-config";
 
 export const runtime = "nodejs";
 
@@ -26,66 +25,6 @@ function verifyStripeSignature(payload: string, header: string | null, secret: s
   }
 }
 
-// A paid Checkout Session with no matching order means the customer paid but did
-// not complete the personalisation form — so the book can't be made yet. Alert
-// the owner to follow up. (No children's details are involved.)
-async function alertAbandonedPaidOrder(sessionId: string, referralCode: string | null): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.ORDER_NOTIFICATION_FROM?.trim();
-  const to = process.env.ORDER_NOTIFICATION_EMAIL?.trim() || siteConfig.contactEmail;
-  if (!apiKey || !from || !to) return;
-
-  const shortReference = sessionId.slice(-8).toUpperCase();
-  const referralLine = referralCode ? `\nReferral: ${referralCode}` : "";
-  const text = [
-    "A Stripe payment completed, but no personalisation form has been submitted for it yet.",
-    "The customer may have closed the browser before finishing. Follow up with them to collect the details before the book can be created.",
-    "",
-    `Stripe session: ${sessionId}${referralLine}`,
-    "",
-    "If the customer already completed the form, no action is needed.",
-  ].join("\n");
-
-  try {
-    await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": `abandoned-paid-${sessionId}`,
-      },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        subject: `Paid order needs personalisation details — ${shortReference}`,
-        text,
-        tags: [{ name: "category", value: "abandoned_paid" }],
-      }),
-    });
-  } catch {
-    // best effort
-  }
-}
-
-async function handlePaidSession(sessionId: string, referralCode: string | null): Promise<void> {
-  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
-  const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !supabaseSecretKey) return;
-
-  try {
-    const existing = await fetch(
-      `${supabaseUrl}/rest/v1/birthday_hero_orders?select=id&stripe_session_id=eq.${encodeURIComponent(sessionId)}`,
-      { headers: { apikey: supabaseSecretKey, Authorization: `Bearer ${supabaseSecretKey}` }, cache: "no-store" },
-    );
-    const rows = existing.ok ? ((await existing.json()) as Array<{ id: string }>) : [];
-    if (rows.length > 0) return; // The personalisation form already recorded this order.
-
-    await alertAbandonedPaidOrder(sessionId, referralCode);
-  } catch {
-    // best effort — never fail the webhook on a follow-up alert
-  }
-}
-
 export async function POST(request: Request) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
@@ -95,20 +34,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
   }
 
-  let event: { type?: string; data?: { object?: Record<string, unknown> } };
+  // Still reject malformed bodies even though nothing is read out of the event
+  // yet, so a signed-but-broken payload is not answered with a cheerful 200.
   try {
-    event = JSON.parse(payload);
+    JSON.parse(payload);
   } catch {
     return NextResponse.json({ error: "Invalid payload." }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data?.object as { id?: string; payment_status?: string; client_reference_id?: string | null } | undefined;
-    if (session?.id && session.payment_status === "paid") {
-      await handlePaidSession(session.id, session.client_reference_id ?? null);
-    }
-  }
-
-  // Acknowledge quickly so Stripe does not retry; processing is best-effort.
+  // This endpoint used to check, right here, whether a paid session already had
+  // a personalisation record and email the owner if not. It fired on every
+  // single order: checkout.session.completed arrives the moment payment
+  // succeeds, while the customer still has a ~3-minute form ahead of them, so a
+  // matching row could never exist yet. Measured in the 2026-07-31 test-mode dry
+  // run — false alarm at 14:12, genuine order alert at 14:18.
+  //
+  // Deciding a customer has abandoned the form needs elapsed time, which a
+  // webhook cannot wait for. That check now lives in /api/reconcile-orders,
+  // which runs on a schedule and only considers payments old enough to judge.
+  //
+  // The endpoint is kept — signature-verified and acknowledging — because it
+  // stays the natural place to finalise orders if the form-first checkout is
+  // ever built, and because removing it would mean reconfiguring Stripe.
   return NextResponse.json({ received: true });
 }
