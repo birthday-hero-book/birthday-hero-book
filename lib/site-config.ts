@@ -9,10 +9,20 @@ export const siteConfig = {
   foundingDeadline: "30 July at midnight",
   foundingDeadlineISO: "2026-07-30T22:59:59Z",
   deliveryTime: "within five working days",
+  // Live Stripe payment links, overridable per edition so a preview deployment
+  // can point the WHOLE site at test-mode links — otherwise the pricing buttons
+  // on a preview still lead to the live links and a dry run is one stray click
+  // away from a real charge. Unset, which is the production case, keeps the live
+  // links below.
+  //
+  // Two constraints: each var must be referenced statically, because Next inlines
+  // NEXT_PUBLIC_ values at build time and a computed process.env[key] would be
+  // undefined in the browser; and for the same reason a deployment must be
+  // REBUILT after these change — setting them alone does nothing.
   checkoutUrls: {
-    standardCheckoutUrl: "https://buy.stripe.com/cNieVd2CXcoH0fL4aGfYY03",
-    deluxeCheckoutUrl: "https://buy.stripe.com/9B67sLelF88r9Ql8qWfYY04",
-    familyCheckoutUrl: "https://buy.stripe.com/fZu9AT7Xh60jd2xgXsfYY05",
+    standardCheckoutUrl: process.env.NEXT_PUBLIC_STRIPE_STANDARD_CHECKOUT_URL || "https://buy.stripe.com/cNieVd2CXcoH0fL4aGfYY03",
+    deluxeCheckoutUrl: process.env.NEXT_PUBLIC_STRIPE_DELUXE_CHECKOUT_URL || "https://buy.stripe.com/9B67sLelF88r9Ql8qWfYY04",
+    familyCheckoutUrl: process.env.NEXT_PUBLIC_STRIPE_FAMILY_CHECKOUT_URL || "https://buy.stripe.com/fZu9AT7Xh60jd2xgXsfYY05",
   },
   packages: [
     {
