@@ -4,6 +4,15 @@ import { REFERRAL_CODE_PATTERN, REFERRAL_COOKIE } from "@/lib/consent";
 
 export const runtime = "nodejs";
 
+// This one request serially parses an up-to-5MB upload, calls Stripe, pushes the
+// photo to Supabase Storage, inserts the order and sends two emails. On a slow
+// mobile connection that can run long, and a timeout AFTER the insert would show
+// the customer a failure for an order that actually saved. 60s is the ceiling on
+// Vercel's Hobby plan. The emails stay awaited on purpose: the function can be
+// frozen the moment the response is returned, so a fire-and-forget send is not
+// reliably delivered.
+export const maxDuration = 60;
+
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const HTML_ENTITIES: Record<string, string> = {
@@ -56,7 +65,15 @@ async function sendOrderNotification(order: NotificationOrder): Promise<OrderNot
   const from = process.env.ORDER_NOTIFICATION_FROM?.trim();
   const to = process.env.ORDER_NOTIFICATION_EMAIL?.trim() || siteConfig.contactEmail;
 
-  if (!apiKey || !from || !to) return "skipped";
+  if (!apiKey || !from || !to) {
+    // Silent skips are how a paid order ends up sitting in Supabase with nobody
+    // told about it, so name the missing setting rather than returning quietly.
+    console.error("Order notification skipped — email is not configured.", {
+      orderId: order.id,
+      missing: [!apiKey && "RESEND_API_KEY", !from && "ORDER_NOTIFICATION_FROM", !to && "ORDER_NOTIFICATION_EMAIL"].filter(Boolean),
+    });
+    return "skipped";
+  }
 
   const selectedPackage = siteConfig.packages.find((item) => item.id === order.packageId);
   const selectedTheme = siteConfig.themes.find((item) => item.id === order.themeId);
@@ -123,7 +140,15 @@ async function sendCustomerConfirmation(order: NotificationOrder): Promise<Order
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.ORDER_NOTIFICATION_FROM?.trim();
 
-  if (!apiKey || !from) return "skipped";
+  if (!apiKey || !from) {
+    // A paying customer with no confirmation email has no receipt at all, so
+    // make the reason visible instead of failing quietly.
+    console.error("Customer confirmation skipped — email is not configured.", {
+      orderId: order.id,
+      missing: [!apiKey && "RESEND_API_KEY", !from && "ORDER_NOTIFICATION_FROM"].filter(Boolean),
+    });
+    return "skipped";
+  }
 
   const selectedPackage = siteConfig.packages.find((item) => item.id === order.packageId);
   const edition = selectedPackage?.name || order.packageId;
@@ -203,8 +228,12 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
 
-    // Quiet honeypot: real customers never see or complete this field.
+    // Quiet honeypot: real customers never see or complete this field. It stays
+    // quiet to the caller, but log it — if a browser ever autofills the hidden
+    // field for a genuine buyer, they are sent to the thank-you page with no
+    // order saved and no alert raised, and this is the only way to find out.
     if (readText(formData, "website", 200)) {
+      console.warn("Order submission rejected by the honeypot field.");
       return NextResponse.json({ ok: true });
     }
 
@@ -255,6 +284,7 @@ export async function POST(request: Request) {
         method: "POST",
         headers: {
           apikey: supabaseSecretKey,
+          Authorization: `Bearer ${supabaseSecretKey}`,
           "Content-Type": photo.type,
           "x-upsert": "false",
         },
@@ -320,6 +350,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         apikey: supabaseSecretKey,
+        Authorization: `Bearer ${supabaseSecretKey}`,
         "Content-Type": "application/json",
         Prefer: "return=minimal",
       },
@@ -327,13 +358,38 @@ export async function POST(request: Request) {
     });
 
     if (!insertResponse.ok) {
+      // stripe_session_id carries a unique index, so a 409 here means this
+      // payment's order is ALREADY saved — almost always a resubmit after the
+      // first response was lost in transit. Telling the customer it failed
+      // would be wrong and alarming, so treat it as the success it is.
+      //
+      // Postgres reports a unique violation as SQLSTATE 23505 and names the
+      // constraint in the message; match either, so renaming the index later
+      // cannot quietly turn this back into a scary error for the customer.
+      const failureDetail = await insertResponse.text().catch(() => "");
+      const alreadySaved =
+        insertResponse.status === 409 &&
+        (failureDetail.includes("23505") || failureDetail.includes("birthday_hero_orders_stripe_session_unique"));
+
+      // The photo just uploaded belongs to a fresh order id that no row
+      // references, so it is an orphan on both branches. Remove it.
       if (photoPath) {
         await fetch(storageObjectUrl(supabaseUrl, photoBucket, photoPath), {
           method: "DELETE",
-          headers: { apikey: supabaseSecretKey },
+          headers: { apikey: supabaseSecretKey, Authorization: `Bearer ${supabaseSecretKey}` },
         });
       }
-      throw new Error("We could not save the order details. Please contact us if you have already paid.");
+
+      if (!alreadySaved) {
+        console.error("Order insert failed.", { orderId, status: insertResponse.status, detail: failureDetail.slice(0, 300) });
+        throw new Error("We could not save the order details. Please contact us if you have already paid.");
+      }
+
+      // Emails were sent by the attempt that won the insert, so don't repeat
+      // them. If that attempt died between the insert and the sends, this line
+      // is the only trace — hence the loud log.
+      console.warn("Duplicate order submission ignored; the order for this Stripe session was already saved.", { stripeSessionId });
+      return NextResponse.json({ ok: true, duplicate: true }, { headers: { "Cache-Control": "no-store" } });
     }
 
     const emailOrder: NotificationOrder = {
@@ -347,6 +403,13 @@ export async function POST(request: Request) {
       sendOrderNotification(emailOrder),
       sendCustomerConfirmation(emailOrder),
     ]);
+
+    // The order is saved either way and the customer sees the thank-you page, so
+    // a non-"sent" result is otherwise invisible. Record it against the order
+    // reference so a missing email can be traced back afterwards.
+    if (staffAlert !== "sent" || customerConfirmation !== "sent") {
+      console.error("Order saved but an email did not send.", { orderId, staffAlert, customerConfirmation });
+    }
 
     return NextResponse.json({ ok: true, notifications: { staffAlert, customerConfirmation } }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
