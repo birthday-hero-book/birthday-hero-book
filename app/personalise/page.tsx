@@ -153,7 +153,6 @@ function PersonalisePageContent() {
           <div className="summary-art"><Image src="/illustrations/adventure-world.png" alt="Sample birthday storybook" fill priority sizes="280px" /><b>{selectedPackage.name}</b></div>
           <div className="summary-package"><h2>{selectedPackage.name}</h2><strong>£{selectedPackage.price}</strong></div>
           <ul><li>✓ Personalised illustrated story</li><li>✓ High-resolution PDF</li><li>✓ Delivered within 5 working days</li></ul>
-          <p><span aria-hidden="true">✦</span> Founding extra included: matching printable invitation set.</p>
           <a href={`mailto:${siteConfig.contactEmail}`}>Need help? {siteConfig.contactEmail}</a>
         </aside>
       </section>

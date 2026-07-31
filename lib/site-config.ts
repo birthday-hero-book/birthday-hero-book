@@ -104,7 +104,7 @@ export const faqs = [
   ["What information do I need to provide?", "You’ll be asked for the child’s first name, age, general appearance, favourite interests and chosen adventure. Family members and pets can also be included."],
   ["Do I need to upload a photograph?", "No. A photograph is optional. You can provide a written description instead."],
   ["When will the book arrive?", "Your finished digital book will be delivered by email within five working days."],
-  ["Is it a physical book?", "The founding product is a high-resolution digital PDF, ready to read on a device or print. Physical editions may be added later."],
+  ["Is it a physical book?", "No. Every book is a high-resolution digital PDF, ready to read on a device or print. Physical editions may be added later."],
   ["Can siblings appear together?", "Yes. Choose the Family Edition for a story featuring two children, or for two separate personalised books."],
   ["Can I request corrections?", "Yes. If we made an error in a name or personalisation detail, we’ll make reasonable corrections."],
   ["What ages is it suitable for?", "Our launch stories are designed for children approximately 3–10 years old."],
