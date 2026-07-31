@@ -33,17 +33,28 @@
 }
 .q-tile--live:hover,
 .q-tile--live:focus-visible {
-  fill: rgba(255, 255, 255, 0.17);
+  fill: rgba(255, 255, 255, 0.15);
 }
 
-.q-crank {
-  cursor: pointer;
-  outline: none;
+/* Persistent reachability marker. Hover-only highlighting meant a phone player
+   had no indication at all of where they could go. */
+.q-mark {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 1.4;
+  animation: q-mark 3.4s ease-in-out infinite;
 }
+@keyframes q-mark {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.85; }
+}
+
+.q-crank { cursor: pointer; outline: none; }
 .q-crank:hover g,
-.q-crank:focus-visible g {
-  filter: brightness(1.25);
-}
+.q-crank:focus-visible g { filter: brightness(1.25); }
+/* A crank the hero cannot currently reach is dimmed — that dimming is itself
+   a hint about what to solve first. */
+.q-crank--idle { cursor: default; opacity: 0.34; }
 
 /* ---------------------------------------------------------------- hero */
 .q-hero {
@@ -100,6 +111,19 @@
 }
 
 .q-flicker { animation: q-flick 2.2s ease-in-out infinite; }
+
+.q-sway { animation: q-sway 5.2s ease-in-out infinite; }
+@keyframes q-sway {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+
+.q-drift { animation: q-drift-x 90s linear infinite; }
+@keyframes q-drift-x {
+  0% { transform: translateX(-1.5%); }
+  50% { transform: translateX(1.5%); }
+  100% { transform: translateX(-1.5%); }
+}
 
 .quest-flash {
   position: absolute;
@@ -321,6 +345,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .q-twinkle, .q-mote, .q-flame, .q-glow, .q-pulse, .q-flicker,
+  .q-sway, .q-drift, .q-mark,
   .q-hero-bob, .q-hero-bob--walk, .quest-flash {
     animation: none !important;
   }
