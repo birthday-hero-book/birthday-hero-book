@@ -20,7 +20,7 @@ export const maxDuration = 60;
 // what lets this work without storing any "already alerted" state. Change the
 // cron schedule without changing this and payments get either double-reported or
 // skipped entirely.
-const SWEEP_WINDOW_HOURS = 24;
+const SWEEP_WINDOW_HOURS = 1;
 
 // How long a customer gets to fill the form in before silence counts as
 // abandonment. The form takes about three minutes; an hour is generous enough
@@ -46,9 +46,12 @@ async function listPaidSessions(stripeApiKey: string, fromUnix: number, toUnix: 
   let truncated = false;
 
   for (let page = 0; page < MAX_STRIPE_PAGES; page += 1) {
+    // Half-open [from, to): lt rather than lte. With an inclusive upper bound a
+    // payment created exactly on a window boundary would fall into two
+    // consecutive runs and be reported twice.
     const query = new URLSearchParams({
       "created[gte]": String(fromUnix),
-      "created[lte]": String(toUnix),
+      "created[lt]": String(toUnix),
       limit: "100",
     });
     if (startingAfter) query.set("starting_after", startingAfter);
@@ -202,9 +205,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "not-configured" }, { status: 503 });
   }
 
-  const nowUnix = Math.floor(Date.now() / 1000);
-  const toUnix = nowUnix - GRACE_PERIOD_HOURS * 3600;
-  const fromUnix = toUnix - SWEEP_WINDOW_HOURS * 3600;
+  // Anchor the window to the clock hour rather than to "now". Cron firing times
+  // drift by a minute or two, and at hourly frequency a window measured from the
+  // actual start time would drift with them — leaving a sliver double-reported
+  // or skipped between consecutive runs. Flooring makes every run compute the
+  // same span it would have computed had it fired exactly on time.
+  const HOUR_SECONDS = 3600;
+  const hourStartUnix = Math.floor(Date.now() / 1000 / HOUR_SECONDS) * HOUR_SECONDS;
+  const toUnix = hourStartUnix - GRACE_PERIOD_HOURS * HOUR_SECONDS;
+  const fromUnix = toUnix - SWEEP_WINDOW_HOURS * HOUR_SECONDS;
 
   try {
     const { sessions, truncated } = await listPaidSessions(stripeApiKey, fromUnix, toUnix);
