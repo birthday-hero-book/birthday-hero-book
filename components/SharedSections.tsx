@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CheckIcon } from "./Brand";
 import { CheckoutConfirm } from "./CheckoutConfirm";
 import { isFoundingOfferOpen } from "@/lib/founding";
+import { ORDERS_OPEN, waitlist, waitlistMailto } from "@/lib/ordering";
 import { faqs, siteConfig } from "@/lib/site-config";
 
 export function Pricing({ variant }: { variant: "one" | "two" }) {
@@ -9,35 +10,53 @@ export function Pricing({ variant }: { variant: "one" | "two" }) {
   return (
     <section id="pricing" className={`pricing pricing--${variant}`}>
       <div className="section-heading centered">
-        <div className="section-kicker">Choose their edition</div>
-        <h2>A gift they’ll find nowhere else.</h2>
-        <p>Every edition is carefully personalised, beautifully illustrated and delivered as a print-ready digital keepsake.</p>
+        <div className="section-kicker">{ORDERS_OPEN ? "Choose their edition" : waitlist.kicker}</div>
+        <h2>{ORDERS_OPEN ? "A gift they’ll find nowhere else." : waitlist.heading}</h2>
+        <p>{ORDERS_OPEN
+          ? "Every edition is carefully personalised, beautifully illustrated and delivered as a print-ready digital keepsake."
+          : waitlist.intro}</p>
       </div>
+      {!ORDERS_OPEN && <p className="waitlist-strip"><span aria-hidden="true">◷</span> {waitlist.strip}</p>}
       <div className="price-grid">
         {siteConfig.packages.map((item) => {
-          const badge = "badge" in item ? item.badge : undefined;
+          // Keep the featured card’s styling, but swap what its chip says: while
+          // the shop is shut every card is labelled sold out, and "Most Popular"
+          // — a nudge to buy something that is not for sale — comes off.
+          const featured = "badge" in item;
+          const badge = ORDERS_OPEN ? ("badge" in item ? item.badge : undefined) : waitlist.badge;
           return (
-          <article className={`price-card ${badge ? "featured" : ""}`} key={item.id}>
+          <article className={`price-card ${featured ? "featured" : ""}`} key={item.id}>
             {badge && <span className="price-badge">{badge}</span>}
             <div className="price-head">
               <h3>{item.name}</h3>
               <p>{item.description}</p>
               <div className="price"><span>£</span>{item.price}</div>
-              <small>one-off payment</small>
+              <small>{ORDERS_OPEN ? "one-off payment" : "one-off payment, when we reopen"}</small>
             </div>
             <ul>
               {item.features.map((feature) => <li key={feature}><CheckIcon /> {feature}</li>)}
             </ul>
-            <CheckoutConfirm
-              packageName={item.name}
-              price={item.price}
-              href={siteConfig.checkoutUrls[checkoutKey(item.id)]}
-              className={`button ${badge ? "button-primary" : "button-outline"}`}
-            />
+            {ORDERS_OPEN ? (
+              <CheckoutConfirm
+                packageName={item.name}
+                price={item.price}
+                href={siteConfig.checkoutUrls[checkoutKey(item.id)]}
+                className={`button ${featured ? "button-primary" : "button-outline"}`}
+              />
+            ) : (
+              // No href to a payment page while the shop is closed — not even an
+              // inert one, since the markup is the only thing standing between a
+              // visitor and Stripe. The slot becomes the waitlist instead.
+              <a className={`button ${featured ? "button-primary" : "button-outline"}`} href={waitlistMailto(item.name)}>
+                {waitlist.cta}
+              </a>
+            )}
           </article>
         )})}
       </div>
-      <p className="payment-note">Secure checkout via Stripe · No subscription · All prices include the complete digital product</p>
+      <p className="payment-note">{ORDERS_OPEN
+        ? "Secure checkout via Stripe · No subscription · All prices include the complete digital product"
+        : waitlist.note}</p>
     </section>
   );
 }

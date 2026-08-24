@@ -6,6 +6,7 @@ import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Brand } from "@/components/Brand";
 import { Pricing } from "@/components/SharedSections";
+import { ORDERS_OPEN, waitlist, waitlistMailto } from "@/lib/ordering";
 import { siteConfig } from "@/lib/site-config";
 
 function PersonalisePageContent() {
@@ -53,6 +54,31 @@ function PersonalisePageContent() {
       setSubmitError(error instanceof Error ? error.message : "We could not save these details. Please try again.");
       setSubmitting(false);
     }
+  }
+
+  // With the shop closed, the only person who should still reach this form is a
+  // customer who already paid and is returning from Stripe with their session
+  // reference. Every other way in is a public one: the edition chooser below
+  // renders live pricing, the demo walkthrough opens the whole form with no
+  // payment at all, and the payment gate’s button links straight back out to a
+  // Stripe checkout page. All three close here, ahead of any of them rendering.
+  const paidReturn = Boolean(selectedPackage) && !isDemo && Boolean(stripeSessionId);
+  if (!ORDERS_OPEN && !paidReturn) {
+    return (
+      <main className="form-page payment-gate-page">
+        <header className="form-nav"><Brand /><div><span>Order details</span><b>{waitlist.kicker}</b></div></header>
+        <section className="payment-gate">
+          <span className="section-kicker">{waitlist.badge}</span>
+          <h1>{waitlist.heading}</h1>
+          <p>{waitlist.intro}</p>
+          <div className="button-row">
+            <a className="button button-primary" href={waitlistMailto()}>{waitlist.cta}</a>
+            <Link className="button button-quiet" href="/">Back to the site</Link>
+          </div>
+          <p className="demo-disclaimer">Already paid for a book? Email {siteConfig.contactEmail} and we’ll finish your order — nothing is lost.</p>
+        </section>
+      </main>
+    );
   }
 
   if (!selectedPackage) {
