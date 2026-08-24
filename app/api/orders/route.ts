@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ORDERS_OPEN } from "@/lib/ordering";
 import { siteConfig } from "@/lib/site-config";
 import { REFERRAL_CODE_PATTERN, REFERRAL_COOKIE } from "@/lib/consent";
 
@@ -216,6 +217,17 @@ async function sendCustomerConfirmation(order: NotificationOrder): Promise<Order
 }
 
 export async function POST(request: Request) {
+  // Deliberately NOT a hard 503 while the shop is closed. The Stripe check below
+  // is what keeps the public out: nothing is accepted without a completed, paid
+  // session that matches the edition, so there is no unpaid route in either way.
+  // Refusing outright would only hit the one person who must still get through —
+  // somebody who already paid and is sending their details. Their money is taken
+  // and this form is the only way to spend it. Log it so a submission arriving
+  // during the pause is visible rather than silent.
+  if (!ORDERS_OPEN) {
+    console.warn("Order submitted while new orders are paused — accepted only if Stripe confirms it was already paid.");
+  }
+
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
   const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   const photoBucket = process.env.SUPABASE_ORDER_BUCKET || "order-photos";
